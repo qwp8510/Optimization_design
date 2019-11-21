@@ -1,0 +1,234 @@
+import numpy as np
+from PyLineSearcher import CFiSearch,CGSSearch
+
+def Test2VarFun1(x):
+    return (x[0]-x[1]+2*(x[0]**2)+2*x[0]*x[1]+x[1]**2)
+# x* = [-1, 1.5], f(x*) = -1.25;
+
+def Test2VarFun2(x):
+    return 0.5*(100*(x[1]-x[0]**2)**2+(1-x[0])**2)
+# x* = [1, 1], f(x*) = 0;
+
+def Test2VarFun3(x):
+    return -x[0]*x[1]*np.exp(-x[0]**2-x[1]**2)
+# x* = [0.7071, 0.7071] or x* = [-0.7071, -0.7071], f(x*) = -0.1839;
+
+def Test2VarFun4(x):
+    return -3*x[1]/(x[0]**2+x[1]**2+1)
+# x* = [0, 1], f(x*) = -1.5;
+
+def test_fun(x):
+    return x[0]**2 +x[1]
+# x*=(2,1)
+
+# Forward diff
+x_value = [-5,5]
+
+class CForwardDiff():
+    descent_value_cols = {}
+    for_value_cols = {}
+    forword_value_cols = {}
+    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-2):
+        self.costfun = costfun
+        self.x = x
+        self.dim = dim
+        self.eps = eps
+        self.percent = percent
+
+    def set_costfun(self, costfun):
+        return costfun(self.func_x)
+
+    def set_x(self, x):
+        # 將x傳回function
+        self.func_x = x
+        return self.set_costfun(self.costfun)
+
+    def set_dim(self, dim):
+        self.dim = dim
+    def set_eps(self, eps):
+        self.eps = eps
+
+    def set_percent(self, percent):
+        self.percent = percent
+
+    def GetGrad(self,step_size,max_iter):
+       for i in range(max_iter):
+            descent_result = list(self.Forword_diff())
+            print('descent_result',descent_result)
+            
+            if (descent_result[-1] < self.eps):
+                f_value = self.set_x(self.x)
+                print('final in step_size result:',self.Mini_cal(step_size,d))
+                print('result:',self.x,f_value)
+                break
+            d = list(map(lambda x:-x,descent_result))[:-1]
+            self.x = [self.x[i] + step_size * d[i] for i in range(self.dim)]
+    
+    def Mini_cal(self,step_size,d):
+        minimize_x = [self.x[i] + d[i]*step_size for i in range(2)]
+        minimize_value = self.set_x(minimize_x)
+        return minimize_value
+
+    def Forword_diff(self):
+        #計算需變動後的值
+        forword_result = 0 # initial
+        descent_value_cols = ['descent_value_{}' for i in range(self.dim)]
+        for i in range(self.dim):
+            self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps
+        
+        for i in range(self.dim):    
+            self.for_value_cols['for_x_{}'.format(i)] = [val + self.descent_value_cols['descent_value_{}'.format(i)]\
+                                                           if i==j else val for j,val in enumerate(self.x)]
+            self.forword_value_cols['forword_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
+                                                                    self.set_x(self.x)) / self.descent_value_cols['descent_value_{}'.format(i)]
+        
+        for num in self.forword_value_cols.values():
+            forword_result += num**2
+        print('forword_result',forword_result**0.5)
+
+        for i in self.forword_value_cols:
+            yield self.forword_value_cols[i]
+        yield forword_result**0.5
+ 
+        
+class CBackwardDiff():
+    descent_value_cols = {}
+    back_value_cols = {}
+    backword_value_cols = {}
+    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-2):
+        self.costfun = costfun
+        self.x = x
+        self.dim = dim
+        self.eps = eps
+        self.percent = percent
+
+    def set_costfun(self, costfun):
+        return costfun(self.func_x)
+
+    def set_x(self, x):
+        # 將x傳回function
+        self.func_x = x
+        return self.set_costfun(self.costfun)
+
+    def set_dim(self, dim):
+        self.dim = dim
+    def set_eps(self, eps):
+        self.eps = eps
+
+    def set_percent(self, percent):
+        self.percent = percent
+
+    def GetGrad(self,step_size,max_iter):
+        for i in range(max_iter):
+            descent_result = list(self.Backword_diff())
+            print('descent_result',descent_result)
+            
+            if (descent_result[-1] < self.eps):
+                f_value = self.set_x(self.x)
+                print('final in step_size result:',self.Mini_cal(step_size,d))
+                print('result:',self.x,f_value)
+                break
+            d = list(map(lambda x:-x,descent_result))[:-1]
+            self.x = [self.x[i] + step_size * d[i] for i in range(self.dim)]    
+
+    def Mini_cal(self,step_size,d):
+        minimize_x = [self.x[i] + d[i]*step_size for i in range(2)]
+        minimize_value = self.set_x(minimize_x)
+        return minimize_value
+
+    def Backword_diff(self):
+        backword_result = 0 # initial
+        descent_value_cols = ['descent_value_{}' for i in range(self.dim)]
+        for i in range(self.dim):
+            self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps 
+            
+        for i in range(self.dim):    
+            self.back_value_cols['back_x_{}'.format(i)] = [val - self.descent_value_cols['descent_value_{}'.format(i)]\
+                                                           if i==j else val for j,val in enumerate(self.x)]
+            self.backword_value_cols['backword_x_{}'.format(i)] = (self.set_x(self.x) - self.set_x(self.back_value_cols['back_x_{}'.format(i)]))\
+                                                                     / self.descent_value_cols['descent_value_{}'.format(i)]     
+        for num in self.backword_value_cols.values():
+            backword_result += num**2
+        print('backword_result',backword_result**0.5)
+
+        for i in self.backword_value_cols:
+            yield self.backword_value_cols[i]
+        yield backword_result**0.5
+
+
+class CCentralDiff():
+    descent_value_cols = {}
+    for_value_cols = {}
+    back_value_cols = {}
+    central_value_cols = {}
+    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-2):
+        self.costfun = costfun
+        self.x = x
+        self.dim = dim
+        self.eps = eps
+        self.percent = percent
+
+    def set_costfun(self, costfun):
+        return costfun(self.func_x)
+
+    def set_x(self, x):
+        # 將x傳回function
+        self.func_x = x
+        return self.set_costfun(self.costfun)
+
+    def set_dim(self, dim):
+        self.dim = dim
+    def set_eps(self, eps):
+        self.eps = eps
+
+    def set_percent(self, percent):
+        self.percent = percent
+
+    def GetGrad(self,step_size,max_iter):
+        for i in range(max_iter):
+            descent_result = list(self.Central_diff())
+            print('descent_result',descent_result)
+            
+            if (descent_result[-1] < self.eps):
+                f_value = self.set_x(self.x)
+                #print('final in step_size result:',self.Mini_cal(step_size,d))
+                print('result:',i,self.x,f_value)
+                break
+            d = list(map(lambda x:-x,descent_result))[:-1]
+            self.x = [self.x[i] + step_size * d[i] for i in range(self.dim)] 
+
+    def Mini_cal(self,step_size,d):
+        minimize_x = [self.x[i] + d[i]*step_size for i in range(2)]
+        minimize_value = self.set_x(minimize_x)
+        return minimize_value
+
+    def Central_diff(self):
+        central_result = 0 # initial
+        descent_value_cols = ['descent_value_{}' for i in range(self.dim)]
+        for i in range(self.dim):
+            self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps 
+            
+        for i in range(self.dim):   
+            self.for_value_cols['for_x_{}'.format(i)] = [val + self.descent_value_cols['descent_value_{}'.format(i)]\
+                                                           if i==j else val for j,val in enumerate(self.x)]
+            self.back_value_cols['back_x_{}'.format(i)] = [val - self.descent_value_cols['descent_value_{}'.format(i)]\
+                                                           if i==j else val for j,val in enumerate(self.x)]   
+
+            self.central_value_cols['central_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
+                                                                    self.set_x(self.back_value_cols['back_x_{}'.format(i)])) / (self.descent_value_cols['descent_value_{}'.format(i)] * 2)
+
+        for num in self.central_value_cols.values():
+            central_result += num**2
+        print('central_result',central_result**0.5)
+
+        for i in self.central_value_cols:
+            yield self.central_value_cols[i]
+        yield central_result**0.5
+
+
+if __name__ == "__main__":
+    # percent = perturbation， percent*x 萬一太小後面要加 self.eps  ,set_dim(維度)
+
+    #CForwardDiff(Test2VarFun4, x_value, dim=2, eps = 1e-3, percent = 1e-2).GetGrad(0.1)
+    CBackwardDiff(Test2VarFun1, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1,1000)
+    #CCentralDiff(Test2VarFun4, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1)

@@ -1,0 +1,59 @@
+from steepest_descent import CForwardDiff,CBackwardDiff,CCentralDiff
+
+def Test2VarFun1(x):
+    return (x[0]-x[1]+2*(x[0]**2)+2*x[0]*x[1]+x[1]**2)
+# x* = [-1, 1.5], f(x*) = -1.25;
+
+def Test2VarFun2(x):
+    return 0.5*(100*(x[1]-x[0]**2)**2+(1-x[0])**2)
+# x* = [1, 1], f(x*) = 0;
+
+def Test2VarFun3(x):
+    return -x[0]*x[1]*np.exp(-x[0]**2-x[1]**2)
+# x* = [0.7071, 0.7071] or x* = [-0.7071, -0.7071], f(x*) = -0.1839;
+
+def Test2VarFun4(x):
+    return -3*x[1]/(x[0]**2+x[1]**2+1)
+# x* = [0, 1], f(x*) = -1.5;
+
+
+class CGradDecent():
+    def __init__(self, costfun, x0, dim, Gradient = 'Backward',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 1000):
+        self.costfun = costfun
+        self.x0 = x0
+        self.dim = dim
+        self.Gradient = Gradient
+        self.LineSearch = LineSearch
+        self.MinNorm = MinNorm
+        self.MaxIter = MaxIter
+
+    def set_costfun(self,costfun):
+        return costfun(self.func_x)
+
+    def set_x0(self,x0):
+        # 將x傳回function
+        self.func_x = x
+        return self.set_costfun(self.costfun)
+
+    def set_dim(self,dim):
+        self.dim = dim
+
+    def set_Maxlter(self,Maxlter):
+        self.MaxIter = MaxIter
+
+    def set_MinNorm(self,MinNorm):
+        self.MinNorm = MinNorm
+
+    def RunOptimization(self):
+        if self.Gradient == 'Forword':
+            CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2).GetGrad(0.1,self.MaxIter)
+        if self.Gradient == 'Backword':
+            CBackwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2).GetGrad(0.1,self.MaxIter)
+        if self.Gradient == 'Central':
+            CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2).GetGrad(0.1,self.MaxIter)
+
+
+if __name__ == '__main__':
+    x0 = [-5,5]
+    dim = 2
+    CGradDecent(Test2VarFun1, x0, dim, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 1000).RunOptimization()
