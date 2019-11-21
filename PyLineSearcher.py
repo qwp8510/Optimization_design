@@ -14,37 +14,46 @@ def TestLineFun3(x):
 #Golden Section search
 #phase one
 class CGSSearch():
-    def __init__(self,costfun,x=0,d=1,eps=0.01):
+    def __init__(self,costfun,x=0, d=1,eps=0.01):
         self.costfun = costfun
         self.x = x
         self.d = d
         self.eps = eps
 
     def set_costfun(self,costfun):
-        return costfun(self.x)
+        return costfun(self.func_x)
 
     def set_x(self,x):
         # 將x傳回function
-        self.x = x
+        self.func_x = x
         return self.set_costfun(self.costfun)
 
     def set_d(self,d):
         self.d = d
 
     #def Runsearch(self,rate,update):    
-    def Runsearch(self,step_size):
+    def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size,update=1.618):
+    def __Phase_one(self,step_size=[0.01,0.01],update=1.618):
+        minize_value_list = []
+        value_list = []
+        if (self.set_x(step_size) >= self.set_x([0,0])):
+            print('final:',TestLineFun1(0.001))
+            return 0.001
         for i in range(100):
-            value = step_size * (update)**(i-1) * (1 + update)
+            value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
             minize_value = self.set_x(value)
-            
+            value_list.append(value)
+            minize_value_list.append(minize_value)
             #最後收斂極限
-            if (minize_value >= self.set_x(0)):
-                value = step_size * (update)**(i-2) * (1 + update)
-                print('phase1:',value,minize_value)
-                return value
+            if i >=2:
+                if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
+                    print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
+                    return value_list[-2]
+        print('over iter at phase1',value)
+        return value
+                
 
     # phase two
 
@@ -67,32 +76,41 @@ class CGSSearch():
         if ( x_1_minize_value == x_2_minize_value):
             low_side_value = x_1
             up_side_value = x_2
+            x_1 = low_side_value + self.Eigenvalue(scaler,low_side_value,up_side_value + self.eps)
+            x_2 = up_side_value - self.Eigenvalue(scaler,low_side_value,up_side_value + self.eps)
 
         return x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low_side_value,scaler
 
 
     def __Phase_two(self,low_bond=0,scaler=0.382):
-        interval = self.__Phase_one(step_size=0.001)
+        interval = self.__Phase_one()
         
-        x_1 = low_bond + scaler * interval
-        x_2 = low_bond + (1 - scaler) * interval
-        up_bond = low_bond + interval   
+        x_1 = low_bond + scaler * interval[0]
+        x_2 = low_bond + (1 - scaler) * interval[0]
+        up_bond = low_bond + interval[0]   
         #x_1、x_2間距 = (1 - 2*scaler) * eigenvalue
 
         for i in range(0,1000):
-            x_1_minize_value = self.set_x(x_1)
-            x_2_minize_value = self.set_x(x_2)
+            x_1_value = list(map(lambda i,y: i + x_1 * y, self.x, self.d))
+            x_2_value = list(map(lambda i,y: i + x_2 * y, self.x, self.d))
+            print('phase 2:',x_1_value,x_2_value)
+            x_1_minize_value = self.set_x(x_1_value)
+            x_2_minize_value = self.set_x(x_2_value)
 
             x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                 self.Iteration_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler)
-            print('pyline search 收斂過程',(x_2 + x_1)/2,self.set_x((x_2 + x_1)/2))
+
+            #print('pyline search 收斂過程',(x_2 + x_1)/2,self.set_x((x_2 + x_1)/2))
             #最後收斂極限
             if ( up_bond - low_bond < self.eps):
-                finel_value = (up_bond + low_bond) * 0.5
+                finel_value = list(map(lambda i,y: i + ((up_bond + low_bond) * 0.5) * y, self.x, self.d))
+                learning_rate = (up_bond + low_bond) * 0.5
                 final_minize_value = self.set_x(finel_value)
-                print('pyline search 收斂結果',i,finel_value,final_minize_value)
-                return finel_value
-                break
+                print('pyline search 收斂結果',i,learning_rate,final_minize_value)
+                return learning_rate
+        print('over iter at phase2')
+        return 0.01
+                
         
 
 #Fibonacci Search Algorithm Phase 2   特色:scaler會隨著迭代變動
@@ -230,19 +248,19 @@ class CFiSearch():
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    #phase 2
+#     #phase 2
     
-    CGSSearch(TestLineFun1).Runsearch(0.01)
+#     CGSSearch(TestLineFun1).Runsearch(0.01)
 
-    #Fibonacci Search Algorithm Phase 2
-    limitation = 0.001
-    final_range = 0.3
-    lower_bond = 0 
-    upper_bond = 51
+#     #Fibonacci Search Algorithm Phase 2
+#     limitation = 0.001
+#     final_range = 0.3
+#     lower_bond = 0 
+#     upper_bond = 51
 
-    #CFiSearch(TestLineFun1,x=0,d=1,eps=0.001).Runsearch(limitation,final_range,lower_bond,upper_bond)
+#     #CFiSearch(TestLineFun1,x=0,d=1,eps=0.001).Runsearch(limitation,final_range,lower_bond,upper_bond)
     """
     測試紀錄:
         10/24: lower_bond != 0 時無法收斂，把upper_bond收斂效果也越差

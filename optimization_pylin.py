@@ -16,16 +16,26 @@ def TestLineFun3(x):
 #phase one
 
 def Phase_one(rate,update=1.618):
-    
+    minize_value_list = []
+    value_list = []
+    if (TestLineFun1(0.001) >= TestLineFun3(0)):
+        print('final:',TestLineFun1(0.001))
+        return 0.001
+
     for i in range(100):
         value = rate * (update)**(i-1) * (1 + update)
-        minize_value = TestLineFun3(value)
+        minize_value = TestLineFun1(value)
+        minize_value_list.append(minize_value)
+        value_list.append(value)
         print(i,value,minize_value)
         #最後收斂極限
-        if (minize_value >= TestLineFun3(0)):
-            break
+        if i >=2:
+            if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
+                print(value_list)
+                print('final:',value_list[-2],minize_value_list[-2])
+                return value_list[-2]
             
-    return value
+    return value_list[-2]
         
 
 # phase two
@@ -40,11 +50,13 @@ def Iteration_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low
         up_side_value = x_2
         x_2 = x_1
         x_1 = low_side_value +  Eigenvalue(scaler,low_side_value,up_side_value)
+        print('<',low_side_value,x_1,x_2,up_side_value)
 
     if ( x_1_minize_value > x_2_minize_value):
         low_side_value = x_1
         x_1 = x_2
         x_2 = up_side_value - Eigenvalue(scaler,low_side_value,up_side_value)
+        print('>',low_side_value,x_1,x_2,up_side_value)
 
     if ( x_1_minize_value == x_2_minize_value):
         low_side_value = x_1

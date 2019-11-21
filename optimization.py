@@ -1,4 +1,7 @@
 from steepest_descent import CForwardDiff,CBackwardDiff,CCentralDiff
+from PyLineSearcher import CFiSearch,CGSSearch
+
+import numpy as np
 
 def Test2VarFun1(x):
     return (x[0]-x[1]+2*(x[0]**2)+2*x[0]*x[1]+x[1]**2)
@@ -45,6 +48,7 @@ class CGradDecent():
         self.MinNorm = MinNorm
 
     def RunOptimization(self):
+        lr_rate = 0.1
         if self.Gradient == 'Forword':
             Diff = CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
         if self.Gradient == 'Backword':
@@ -53,19 +57,26 @@ class CGradDecent():
             Diff = CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
 
         for i in range(self.MaxIter):
-            descent_result = list(Diff.GetGrad(0.1,self.x0))
+
+            descent_result = list(Diff.GetGrad(lr_rate,self.x0))
             print('descent_result',descent_result)
             d = list(map(lambda x:-x,descent_result))[:-1]
             if (descent_result[-1] < self.MinNorm):
                 f_value = self.set_x0(self.x0)
-                print('result:',self.x0,f_value)
-                break
-            
-            self.x0 = [self.x0[i] + 0.1 * d[i] for i in range(self.dim)]
-            
+                print('result at:',i,self.x0,f_value)
+                return f_value  
+            lr_rate = CGSSearch(self.costfun, self.x0, d, eps=0.01).Runsearch()
+            self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
+
+        print('over iter:',self.x0,self.set_x0(self.x0))
 
 
 if __name__ == '__main__':
-    x0 = [-5,5]
+    x0 = [1,2]
     dim = 2
-    CGradDecent(Test2VarFun1, x0, dim, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 1000).RunOptimization()
+    CGradDecent(Test2VarFun2, x0, dim, Gradient = 'Forword',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 2000).RunOptimization()
+
+""" test report:
+11/21: central,for,back:做func3 在x0設其他點會有問題
+
+"""

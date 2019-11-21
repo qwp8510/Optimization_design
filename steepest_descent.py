@@ -55,7 +55,6 @@ class CForwardDiff():
         self.x = x0
         return self.Forword_diff()
     
-
     def Forword_diff(self):
         #計算需變動後的值
         forword_result = 0 # initial
@@ -71,7 +70,7 @@ class CForwardDiff():
         
         for num in self.forword_value_cols.values():
             forword_result += num**2
-        print('forword_result',forword_result**0.5)
+        print('forword_result:',forword_result**0.5)
 
         for i in self.forword_value_cols:
             yield self.forword_value_cols[i]
