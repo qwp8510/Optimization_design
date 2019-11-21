@@ -1,6 +1,5 @@
 import time
 import numpy as np
-from functools import lru_cache
 
 #LineSearch
 def TestLineFun1(x):

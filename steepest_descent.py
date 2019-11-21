@@ -51,23 +51,10 @@ class CForwardDiff():
     def set_percent(self, percent):
         self.percent = percent
 
-    def GetGrad(self,step_size,max_iter):
-       for i in range(max_iter):
-            descent_result = list(self.Forword_diff())
-            print('descent_result',descent_result)
-            
-            if (descent_result[-1] < self.eps):
-                f_value = self.set_x(self.x)
-                print('final in step_size result:',self.Mini_cal(step_size,d))
-                print('result:',self.x,f_value)
-                break
-            d = list(map(lambda x:-x,descent_result))[:-1]
-            self.x = [self.x[i] + step_size * d[i] for i in range(self.dim)]
+    def GetGrad(self,step_size,x0):
+        self.x = x0
+        return self.Forword_diff()
     
-    def Mini_cal(self,step_size,d):
-        minimize_x = [self.x[i] + d[i]*step_size for i in range(2)]
-        minimize_value = self.set_x(minimize_x)
-        return minimize_value
 
     def Forword_diff(self):
         #計算需變動後的值
@@ -118,23 +105,10 @@ class CBackwardDiff():
     def set_percent(self, percent):
         self.percent = percent
 
-    def GetGrad(self,step_size,max_iter):
-        for i in range(max_iter):
-            descent_result = list(self.Backword_diff())
-            print('descent_result',descent_result)
-            
-            if (descent_result[-1] < self.eps):
-                f_value = self.set_x(self.x)
-                print('final in step_size result:',self.Mini_cal(step_size,d))
-                print('result:',self.x,f_value)
-                break
-            d = list(map(lambda x:-x,descent_result))[:-1]
-            self.x = [self.x[i] + step_size * d[i] for i in range(self.dim)]    
+    def GetGrad(self,step_size,x0):
+        self.x = x0
+        return self.Backword_diff()
 
-    def Mini_cal(self,step_size,d):
-        minimize_x = [self.x[i] + d[i]*step_size for i in range(2)]
-        minimize_value = self.set_x(minimize_x)
-        return minimize_value
 
     def Backword_diff(self):
         backword_result = 0 # initial
@@ -184,23 +158,10 @@ class CCentralDiff():
     def set_percent(self, percent):
         self.percent = percent
 
-    def GetGrad(self,step_size,max_iter):
-        for i in range(max_iter):
-            descent_result = list(self.Central_diff())
-            print('descent_result',descent_result)
-            
-            if (descent_result[-1] < self.eps):
-                f_value = self.set_x(self.x)
-                #print('final in step_size result:',self.Mini_cal(step_size,d))
-                print('result:',i,self.x,f_value)
-                break
-            d = list(map(lambda x:-x,descent_result))[:-1]
-            self.x = [self.x[i] + step_size * d[i] for i in range(self.dim)] 
+    def GetGrad(self,step_size,x0):
+        self.x = x0
+        return self.Central_diff()
 
-    def Mini_cal(self,step_size,d):
-        minimize_x = [self.x[i] + d[i]*step_size for i in range(2)]
-        minimize_value = self.set_x(minimize_x)
-        return minimize_value
 
     def Central_diff(self):
         central_result = 0 # initial

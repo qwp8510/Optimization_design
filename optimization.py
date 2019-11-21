@@ -32,7 +32,7 @@ class CGradDecent():
 
     def set_x0(self,x0):
         # 將x傳回function
-        self.func_x = x
+        self.func_x = x0
         return self.set_costfun(self.costfun)
 
     def set_dim(self,dim):
@@ -46,11 +46,23 @@ class CGradDecent():
 
     def RunOptimization(self):
         if self.Gradient == 'Forword':
-            CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2).GetGrad(0.1,self.MaxIter)
+            Diff = CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
         if self.Gradient == 'Backword':
-            CBackwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2).GetGrad(0.1,self.MaxIter)
+            Diff = CBackwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
         if self.Gradient == 'Central':
-            CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2).GetGrad(0.1,self.MaxIter)
+            Diff = CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
+
+        for i in range(self.MaxIter):
+            descent_result = list(Diff.GetGrad(0.1,self.x0))
+            print('descent_result',descent_result)
+            d = list(map(lambda x:-x,descent_result))[:-1]
+            if (descent_result[-1] < self.MinNorm):
+                f_value = self.set_x0(self.x0)
+                print('result:',self.x0,f_value)
+                break
+            
+            self.x0 = [self.x0[i] + 0.1 * d[i] for i in range(self.dim)]
+            
 
 
 if __name__ == '__main__':
