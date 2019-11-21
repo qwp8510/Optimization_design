@@ -5,23 +5,26 @@ import time
 
 def TestLineFun1(x):
     return x**4-14*(x**3)+60*(x**2)-70*x
+# x: 0.75 f(x): -24
 
 def TestLineFun3(x):
     return -(108*x-x**3)/4
+# x:6 f(x): -108
 
 #Golden Section search
 
 #phase one
 
 def Phase_one(rate,update=1.618):
-    i = 45
-    value = rate * (update)**(i-1) * (1 + update)
-        # minize_value = TestLineFun3(value)
-
-        # #最後收斂極限
-        # if (minize_value >= TestLineFun3(0)):
-        #     break
-        # print(i,value,minize_value)
+    
+    for i in range(100):
+        value = rate * (update)**(i-1) * (1 + update)
+        minize_value = TestLineFun3(value)
+        print(i,value,minize_value)
+        #最後收斂極限
+        if (minize_value >= TestLineFun3(0)):
+            break
+            
     return value
         
 
@@ -193,9 +196,9 @@ def Fibonacci_Search(limit,final_range,low_bond,up_bond):
 
 if __name__ == '__main__':
     #phase 1
-    step_size = 0.001
+    step_size = 0.01
     update_parameter = 1.618
-    #Phase_one(step_size,update_parameter)
+    Phase_one(step_size,update_parameter)
 
     #phase 2
     scaler = 0.382
@@ -203,10 +206,10 @@ if __name__ == '__main__':
     lower_bond = 1 
     upper_bond = 50   
     
-    Phase_two(limitation)
+    #Phase_two(limitation)
 
     #Fibonacci Search Algorithm Phase 2
-    limitation = 0.001
+    limitation = 0.1
     final_range = 0.3
     lower_bond = 1 
     upper_bond = 51 

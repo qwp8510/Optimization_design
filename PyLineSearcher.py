@@ -36,9 +36,15 @@ class CGSSearch():
         return self.__Phase_two()
 
     def __Phase_one(self,step_size,update=1.618):
-        i = 34
-        value = step_size * (update)**(i-1) * (1 + update)
-        return value
+        for i in range(100):
+            value = step_size * (update)**(i-1) * (1 + update)
+            minize_value = self.set_x(value)
+            
+            #最後收斂極限
+            if (minize_value >= self.set_x(0)):
+                value = step_size * (update)**(i-2) * (1 + update)
+                print('phase1:',value,minize_value)
+                return value
 
     # phase two
 
