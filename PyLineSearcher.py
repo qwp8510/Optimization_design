@@ -11,9 +11,12 @@ def TestLineFun2(x):
 def TestLineFun3(x):
     return -(108*x-x**3)/4
 # x:6 f(x): -108
+def Test2VarFun1(x):
+    return (x[0]-x[1]+2*(x[0]**2)+2*x[0]*x[1]+x[1]**2)
 #Golden Section search
 #phase one
 class CGSSearch():
+    #Golden Search
     def __init__(self,costfun,x=0, d=1,eps=0.01):
         self.costfun = costfun
         self.x = x
@@ -39,8 +42,8 @@ class CGSSearch():
         minize_value_list = []
         value_list = []
         if (self.set_x(step_size) >= self.set_x([0,0])):
-            print('final:',TestLineFun1(0.001))
-            return 0.001
+            print('final:',self.set_x([step_size]))
+            return step_size
         for i in range(100):
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
             minize_value = self.set_x(value)
@@ -116,6 +119,7 @@ class CGSSearch():
 #Fibonacci Search Algorithm Phase 2   特色:scaler會隨著迭代變動
 
 class CFiSearch():
+    #Fibonacci_Search
     fibonacci_count = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 
                         17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 
                         5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155, 165580141, 267914296, 
@@ -132,15 +136,33 @@ class CFiSearch():
 
     def set_x(self,x):
         # 將x傳回function
-        self.x = x
+        self.func_x = x
         return self.set_costfun(self.costfun)
 
     def set_d(self,d):
         self.d = d
 
-    def Runsearch(self,eps,final_range,low_bond,up_bond):
-        return self.__Fibonacci_Search(self.eps,final_range,low_bond,up_bond)
+    def Runsearch(self):
+        return self.__Phase_two()
 
+    def __Phase_one(self,step_size=[0.01,0.01],update=1.618):
+        minize_value_list = []
+        value_list = []
+        if (self.set_x(step_size) >= self.set_x([0,0])):
+            print('final:',self.set_x(step_size))
+            return step_size
+        for i in range(100):
+            value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
+            minize_value = self.set_x(value)
+            value_list.append(value)
+            minize_value_list.append(minize_value)
+            #最後收斂極限
+            if i >=2:
+                if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
+                    print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
+                    return value_list[-2]
+        print('over iter at phase1',value)
+        return value
 
     def Eigenvalue(self,scaler,low_bond,up_bond):
         #計算upbond、lowbond 間距
@@ -183,6 +205,7 @@ class CFiSearch():
             else:
                 func_value = 0.5 * (up_bond + low_bond)
                 print(func_value,'result:',self.set_x(func_value))
+                return func_value
 
         if ( x_1_minize_value > x_2_minize_value):
             up_bond = x_1
@@ -193,6 +216,7 @@ class CFiSearch():
             else:
                 func_value = 0.5 * (up_bond + low_bond)
                 print(func_value,'result:',self.set_x(func_value))
+                return func_value
 
         if ( x_1_minize_value == x_2_minize_value):
             up_bond = x_1
@@ -203,11 +227,18 @@ class CFiSearch():
             else:
                 func_value = 0.5 * (up_bond + low_bond)
                 print(func_value,'result:',self.set_x(func_value))
+                return func_value
 
-    def __Fibonacci_Search(self,limit,final_range,low_bond,up_bond):
-        # self.fibonacci_count = [self.fibon(n) for n in range(20)]
+    def __Phase_two(self,final_range=0.01,low_bond=0,scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
-        F_N = ((1 + 2*limit) * (up_bond - low_bond)) / final_range   # F_N = fibonacci 某一值
+
+        interval = self.__Phase_one()
+        
+        x_1 = low_bond + scaler * interval[0]
+        x_2 = low_bond + (1 - scaler) * interval[0]
+        up_bond = low_bond + interval[0]  
+
+        F_N = ((1 + 2*self.eps) * (interval[0])) / final_range   # F_N = fibonacci 某一值
         if F_N not in self.fibonacci_count:        
             N = sorted(self.fibonacci_count + [F_N]).index(F_N) + 1 - 1  # +1為選取我要的fibonacci數列中的值 N = 迭代次數 (F_N 為 N+1 所以算出來要減1)
         else:
@@ -217,12 +248,13 @@ class CFiSearch():
             #根據迭代次數做運算
             if i == 1:
                 #最後迭代
-                scaler = 0.5 - limit
+                scaler = 0.5 - self.eps
                 eigenvalue = self.Eigenvalue(scaler,low_bond,up_bond)
                 x_1 = low_bond + eigenvalue
                 x_2 = up_bond - eigenvalue
 
-                self.Final_Fib_iteration(x_1,x_2,low_bond,up_bond,final_range)
+                learning_rate = self.Final_Fib_iteration(x_1,x_2,low_bond,up_bond,final_range)
+                return learning_rate
                 
             else:
                 if i == N:
@@ -260,7 +292,7 @@ class CFiSearch():
 #     lower_bond = 0 
 #     upper_bond = 51
 
-#     #CFiSearch(TestLineFun1,x=0,d=1,eps=0.001).Runsearch(limitation,final_range,lower_bond,upper_bond)
+    #CFiSearch(TestLineFun1,x=0,d=1,eps=0.001).Runsearch()
     """
     測試紀錄:
         10/24: lower_bond != 0 時無法收斂，把upper_bond收斂效果也越差

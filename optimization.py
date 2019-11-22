@@ -65,7 +65,8 @@ class CGradDecent():
                 f_value = self.set_x0(self.x0)
                 print('result at:',i,self.x0,f_value)
                 return f_value  
-            lr_rate = CGSSearch(self.costfun, self.x0, d, eps=0.01).Runsearch()
+            lr_rate = CFiSearch(self.costfun, self.x0, d, eps=0.01).Runsearch()
+            print('learing rate:',lr_rate)
             self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
 
         print('over iter:',self.x0,self.set_x0(self.x0))
@@ -74,7 +75,7 @@ class CGradDecent():
 if __name__ == '__main__':
     x0 = [1,2]
     dim = 2
-    CGradDecent(Test2VarFun2, x0, dim, Gradient = 'Forword',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 2000).RunOptimization()
+    CGradDecent(Test2VarFun3, x0, dim, Gradient = 'Forword',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 2000).RunOptimization()
 
 """ test report:
 11/21: central,for,back:做func3 在x0設其他點會有問題
