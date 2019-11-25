@@ -205,7 +205,6 @@ class CFiSearch():
             else:
                 func_value = 0.5 * (up_bond + low_bond)
                 print(func_value,'result:',self.set_x(func_value))
-                return func_value
 
         if ( x_1_minize_value > x_2_minize_value):
             up_bond = x_1
@@ -216,7 +215,6 @@ class CFiSearch():
             else:
                 func_value = 0.5 * (up_bond + low_bond)
                 print(func_value,'result:',self.set_x(func_value))
-                return func_value
 
         if ( x_1_minize_value == x_2_minize_value):
             up_bond = x_1
@@ -227,7 +225,7 @@ class CFiSearch():
             else:
                 func_value = 0.5 * (up_bond + low_bond)
                 print(func_value,'result:',self.set_x(func_value))
-                return func_value
+        return func_value
 
     def __Phase_two(self,final_range=0.01,low_bond=0,scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
