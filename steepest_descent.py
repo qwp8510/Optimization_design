@@ -22,7 +22,7 @@ def test_fun(x):
 # x*=(2,1)
 
 # Forward diff
-x_value = [-5,5]
+x_value = [-2,2]
 
 class CForwardDiff():
     descent_value_cols = {}
@@ -81,7 +81,7 @@ class CBackwardDiff():
     descent_value_cols = {}
     back_value_cols = {}
     backword_value_cols = {}
-    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-2):
+    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-3):
         self.costfun = costfun
         self.x = x
         self.dim = dim
@@ -107,7 +107,6 @@ class CBackwardDiff():
     def GetGrad(self,step_size,x0):
         self.x = x0
         return self.Backword_diff()
-
 
     def Backword_diff(self):
         backword_result = 0 # initial
@@ -190,5 +189,5 @@ if __name__ == "__main__":
     # percent = perturbation， percent*x 萬一太小後面要加 self.eps  ,set_dim(維度)
 
     #CForwardDiff(Test2VarFun4, x_value, dim=2, eps = 1e-3, percent = 1e-2).GetGrad(0.1)
-    CBackwardDiff(Test2VarFun1, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1,1000)
+    CBackwardDiff(Test2VarFun2, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1,x_value)
     #CCentralDiff(Test2VarFun4, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1)

@@ -38,11 +38,11 @@ class CGSSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.01,0.01],update=1.618):
+    def __Phase_one(self,step_size=[0.01,0.01,0.01,0.01],update=1.618):
         minize_value_list = []
         value_list = []
-        if (self.set_x(step_size) >= self.set_x([0,0])):
-            print('final:',self.set_x([step_size]))
+        if (self.set_x(step_size) >= self.set_x([0,0,0,0])):
+            print('final:',self.set_x(step_size))
             return step_size
         for i in range(100):
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
@@ -187,7 +187,10 @@ class CFiSearch():
         if ( x_1_minize_value == x_2_minize_value):
             low_side_value = x_1
             up_side_value = x_2
-            scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time]) #計算下一個scaler
+            scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time])
+            x_1 = low_side_value + self.Eigenvalue(scaler,low_side_value,up_side_value + self.eps)
+            x_2 = up_side_value - self.Eigenvalue(scaler,low_side_value,up_side_value + self.eps)
+            
 
 
         return x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low_side_value,scaler
