@@ -84,7 +84,7 @@ class CGradDecent():
 if __name__ == '__main__':
     x0 = [1,2,3,4]
     dim = 4
-    CGradDecent(PowellFun, x0, dim, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 100000).RunOptimization()
+    CGradDecent(PowellFun, x0, dim, Gradient = 'Central',LineSearch = 'GsS', MinNorm = 0.01, MaxIter = 150000).RunOptimization()
 
 """ test report:
 11/21: central,for,back:做func3 在x0設其他點會有問題
