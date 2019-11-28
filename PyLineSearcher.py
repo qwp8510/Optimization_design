@@ -38,11 +38,10 @@ class CGSSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.001,0.001,0.001,0.001],update=1.618):
+    def __Phase_one(self,step_size=[0.0001,0.0001,0.0001,0.0001],update=1.618):
         minize_value_list = []
         value_list = []
         if (self.set_x(step_size) >= self.set_x([0,0,0,0])):
-            print('------=',self.set_x(step_size),self.set_x([0,0,0,0]))
             print('fss final:',self.set_x(step_size))
             return step_size
         for i in range(100):
@@ -146,10 +145,10 @@ class CFiSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.01,0.01],update=1.618):
+    def __Phase_one(self,step_size=[0.0001,0.0001,0.0001,0.0001],update=1.618):
         minize_value_list = []
         value_list = []
-        if (self.set_x(step_size) >= self.set_x([0,0])):
+        if (self.set_x(step_size) >= self.set_x([0,0,0,0])):
             print('fib final:',self.set_x(step_size))
             return step_size
         for i in range(100):
@@ -245,10 +244,9 @@ class CFiSearch():
             N = sorted(self.fibonacci_count + [F_N]).index(F_N) + 1 - 1  # +1為選取我要的fibonacci數列中的值 N = 迭代次數 (F_N 為 N+1 所以算出來要減1)
         else:
             N = self.fibonacci_count.index(F_N) - 1
-
-        for i in range(N,0,-1):
+        for i in range(N,-1,-1):
             #根據迭代次數做運算
-            if i == 1:
+            if i == 0:
                 #最後迭代
                 scaler = 0.5 - self.eps
                 eigenvalue = self.Eigenvalue(scaler,low_bond,up_bond)

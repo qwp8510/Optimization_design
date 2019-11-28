@@ -58,10 +58,10 @@ class CForwardDiff():
     def Forword_diff(self):
         #計算需變動後的值
         forword_result = 0 # initial
-        descent_value_cols = ['descent_value_{}' for i in range(self.dim)]
+        descent_value_cols = ['descent_value_{}'.format(i) for i in range(self.dim)]
         for i in range(self.dim):
             self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps
-        
+        print('==============',self.descent_value_cols,'++++++++++++')    
         for i in range(self.dim):    
             self.for_value_cols['for_x_{}'.format(i)] = [val + self.descent_value_cols['descent_value_{}'.format(i)]\
                                                            if i==j else val for j,val in enumerate(self.x)]
@@ -110,7 +110,7 @@ class CBackwardDiff():
 
     def Backword_diff(self):
         backword_result = 0 # initial
-        descent_value_cols = ['descent_value_{}' for i in range(self.dim)]
+        descent_value_cols = ['descent_value_{}'.format(i) for i in range(self.dim)]
         for i in range(self.dim):
             self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps 
             
@@ -163,10 +163,10 @@ class CCentralDiff():
 
     def Central_diff(self):
         central_result = 0 # initial
-        descent_value_cols = ['descent_value_{}' for i in range(self.dim)]
+        descent_value_cols = ['descent_value_{}'.format(i) for i in range(self.dim)]
         for i in range(self.dim):
             self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps 
-            
+        
         for i in range(self.dim):   
             self.for_value_cols['for_x_{}'.format(i)] = [val + self.descent_value_cols['descent_value_{}'.format(i)]\
                                                            if i==j else val for j,val in enumerate(self.x)]
