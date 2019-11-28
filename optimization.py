@@ -70,6 +70,7 @@ class CGradDecent():
             descent_result = list(_Diff.GetGrad(lr_rate,self.x0))
             print('descent_result',descent_result)
             d = list(map(lambda x:-x,descent_result))[:-1]
+            print('iter at:', i, self.x0, self.set_x0(self.x0))
             if (descent_result[-1] < self.MinNorm):
                 f_value = self.set_x0(self.x0)
                 print('result at:',i,self.x0,f_value)
@@ -83,7 +84,7 @@ class CGradDecent():
 if __name__ == '__main__':
     x0 = [1,2,3,4]
     dim = 4
-    CGradDecent(PowellFun, x0, dim, Gradient = 'Backword',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 10000).RunOptimization()
+    CGradDecent(PowellFun, x0, dim, Gradient = 'Central',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 20000).RunOptimization()
 
 """ test report:
 11/21: central,for,back:做func3 在x0設其他點會有問題

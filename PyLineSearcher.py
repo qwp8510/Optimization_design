@@ -38,11 +38,12 @@ class CGSSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.01,0.01,0.01,0.01],update=1.618):
+    def __Phase_one(self,step_size=[0.001,0.001,0.001,0.001],update=1.618):
         minize_value_list = []
         value_list = []
         if (self.set_x(step_size) >= self.set_x([0,0,0,0])):
-            print('final:',self.set_x(step_size))
+            print('------=',self.set_x(step_size),self.set_x([0,0,0,0]))
+            print('fss final:',self.set_x(step_size))
             return step_size
         for i in range(100):
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
@@ -149,7 +150,7 @@ class CFiSearch():
         minize_value_list = []
         value_list = []
         if (self.set_x(step_size) >= self.set_x([0,0])):
-            print('final:',self.set_x(step_size))
+            print('fib final:',self.set_x(step_size))
             return step_size
         for i in range(100):
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))

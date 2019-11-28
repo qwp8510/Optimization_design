@@ -216,7 +216,7 @@ if __name__ == '__main__':
     #phase 1
     step_size = 0.01
     update_parameter = 1.618
-    #Phase_one(step_size,update_parameter)
+    Phase_one(step_size,update_parameter)
 
     #phase 2
     scaler = 0.382

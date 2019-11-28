@@ -81,7 +81,7 @@ class CBackwardDiff():
     descent_value_cols = {}
     back_value_cols = {}
     backword_value_cols = {}
-    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-3):
+    def __init__(self, costfun, x, dim, eps = 1e-5, percent = 1e-4):
         self.costfun = costfun
         self.x = x
         self.dim = dim
@@ -174,7 +174,7 @@ class CCentralDiff():
                                                            if i==j else val for j,val in enumerate(self.x)]   
 
             self.central_value_cols['central_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
-                                                                    self.set_x(self.back_value_cols['back_x_{}'.format(i)])) / (self.descent_value_cols['descent_value_{}'.format(i)] * 2)
+                                                                    self.set_x(self.back_value_cols['back_x_{}'.format(i)])) / (self.descent_value_cols['descent_value_{}'.format(i)])
 
         for num in self.central_value_cols.values():
             central_result += num**2
