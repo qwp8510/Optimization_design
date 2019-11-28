@@ -109,7 +109,6 @@ class CGSSearch():
             x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                 self.Iteration_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler)
 
-            #print('pyline search 收斂過程',(x_2 + x_1)/2,self.set_x((x_2 + x_1)/2))
             #最後收斂極限
             if ( up_bond - low_bond < self.eps):
                 finel_value = list(map(lambda i,y: i + ((up_bond + low_bond) * 0.5) * y, self.x, self.d))
@@ -151,19 +150,27 @@ class CFiSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.0001,0.0001,0.0001,0.0001],update=1.618):
+    def __Phase_one(self,step_size=[0.1,0.1,0.1,0.1],update=1.618):
+        #step_size *= len(self.x) 
         minize_value_list = []
         value_list = []
-        if (self.set_x(step_size) >= self.set_x([0,0,0,0])):
-            print('fib final:',self.set_x(step_size))
-            return step_size
-        for i in range(100):
+        minize_value_list.append(self.set_x(step_size))
+        value_list.append(step_size)
+
+        if (minize_value_list[0] >= self.set_x([0,0,0,0])):
+            print('fss final:',value_list[0])
+            return value_list[0]
+        for i in range(100):                
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
             minize_value = self.set_x(value)
             value_list.append(value)
             minize_value_list.append(minize_value)
             #最後收斂極限
-            if i >=2:
+            if i == 0:
+                if(minize_value_list[-1] >= minize_value_list[-2]):
+                    print('fss final:',minize_value_list[-2])
+                    return value_list[-2]
+            else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
                     print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
                     return value_list[-2]
@@ -236,7 +243,6 @@ class CFiSearch():
 
     def __Phase_two(self,final_range=0.0001,low_bond=0,scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
-
         interval = self.__Phase_one()
         
         x_1 = low_bond + scaler * interval[0]
