@@ -137,7 +137,7 @@ class CFiSearch():
         self.eps = eps
 
     def set_costfun(self,costfun):
-        return costfun(self.x)
+        return costfun(self.func_x)
 
     def set_x(self,x):
         # 將x傳回function
@@ -150,7 +150,7 @@ class CFiSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.1,0.1,0.1,0.1],update=1.618):
+    def __Phase_one(self,step_size=[0.1,0.1,0.0001,0.0001],update=1.618):
         #step_size *= len(self.x) 
         minize_value_list = []
         value_list = []
@@ -168,7 +168,7 @@ class CFiSearch():
             #最後收斂極限
             if i == 0:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
-                    print('fss final:',minize_value_list[-2])
+                    print('fis final:',minize_value_list[-2])
                     return value_list[-2]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
@@ -176,6 +176,11 @@ class CFiSearch():
                     return value_list[-2]
         print('over iter at phase1',value)
         return value
+
+    def multi_dimension(self,x_1,x_2):
+        x_1_value = list(map(lambda i,y: i + x_1 * y, self.x, self.d))
+        x_2_value = list(map(lambda i,y: i + x_2 * y, self.x, self.d))
+        return x_1_value, x_2_value
 
     def Eigenvalue(self,scaler,low_bond,up_bond):
         #計算upbond、lowbond 間距
@@ -207,8 +212,9 @@ class CFiSearch():
         return x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low_side_value,scaler
 
     def Final_Fib_iteration(self,x_1,x_2,low_bond,up_bond,final_range):
-        x_1_minize_value = self.set_x(x_1)
-        x_2_minize_value = self.set_x(x_2)
+        x_1_value, x_2_value = self.multi_dimension(x_1, x_2)
+        x_1_minize_value = self.set_x(x_1_value)
+        x_2_minize_value = self.set_x(x_2_value)
 
         if ( x_1_minize_value < x_2_minize_value):
             up_bond = x_2
@@ -244,11 +250,7 @@ class CFiSearch():
     def __Phase_two(self,final_range=0.0001,low_bond=0,scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
         interval = self.__Phase_one()
-        
-        x_1 = low_bond + scaler * interval[0]
-        x_2 = low_bond + (1 - scaler) * interval[0]
-        up_bond = low_bond + interval[0]  
-
+        #low、up_bond 分別為上下邊界，x1、x2為產生的點
         F_N = ((1 + 2*self.eps) * (interval[0])) / final_range   # F_N = fibonacci 某一值
         if F_N not in self.fibonacci_count:        
             N = sorted(self.fibonacci_count + [F_N]).index(F_N) + 1 - 1  # +1為選取我要的fibonacci數列中的值 N = 迭代次數 (F_N 為 N+1 所以算出來要減1)
@@ -270,21 +272,21 @@ class CFiSearch():
                 if i == N:
                     #初次迭代
                     scaler = 1 - (self.fibonacci_count[i]/self.fibonacci_count[i+1])
-                    eigenvalue = self.Eigenvalue(scaler,low_bond,up_bond)
-                    
-                    #low、up_bond 分別為上下邊界，x1、x2為產生的點
-                    x_1 = low_bond + eigenvalue
-                    x_2 = up_bond - eigenvalue
-                    x_1_minize_value = self.set_x(x_1)
-                    x_2_minize_value = self.set_x(x_2)
+                    x_1 = low_bond + scaler * interval[0]
+                    x_2 = low_bond + (1 - scaler) * interval[0]
+                    up_bond = low_bond + interval[0]  
+                    x_1_value, x_2_value = self.multi_dimension(x_1, x_2)
+                    x_1_minize_value = self.set_x(x_1_value)
+                    x_2_minize_value = self.set_x(x_2_value)
 
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
                     
                 else:
                     #大部分迭代
-                    x_1_minize_value = self.set_x(x_1)
-                    x_2_minize_value = self.set_x(x_2)
+                    x_1_value, x_2_value = self.multi_dimension(x_1, x_2)
+                    x_1_minize_value = self.set_x(x_1_value)
+                    x_2_minize_value = self.set_x(x_2_value)
 
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)

@@ -1,6 +1,5 @@
 from steepest_descent import CForwardDiff,CBackwardDiff,CCentralDiff
 from PyLineSearcher import CGSSearch,CFiSearch
-
 import numpy as np
 
 def Test2VarFun1(x):
@@ -18,6 +17,7 @@ def Test2VarFun3(x):
 def Test2VarFun4(x):
     return -3*x[1]/(x[0]**2+x[1]**2+1)
 # x* = [0, 1], f(x*) = -1.5;
+
 def PowellFun(x):
     f1 = x[0]+10*x[1]
     f2 = np.sqrt(5.0)*(x[2]-x[3])
@@ -27,7 +27,7 @@ def PowellFun(x):
 # x* = [0, 0, 0, 0], f(x*) = 0;
 
 class CGradDecent():
-    def __init__(self, costfun, x0, dim, Gradient = 'Backward',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 1000):
+    def __init__(self, costfun, x0, dim, Gradient = 'Backward',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 1000):
         self.costfun = costfun
         self.x0 = x0
         self.dim = dim
@@ -84,7 +84,7 @@ class CGradDecent():
 if __name__ == '__main__':
     x0 = [1,2,3,4]
     dim = 4
-    CGradDecent(PowellFun, x0, dim, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.01, MaxIter = 150000).RunOptimization()
+    CGradDecent(PowellFun, x0, dim, Gradient = 'Central',LineSearch = 'GsS', MinNorm = 0.01, MaxIter = 150000).RunOptimization()
 
 """ test report:
 11/21: central,for,back:做func3 在x0設其他點會有問題
