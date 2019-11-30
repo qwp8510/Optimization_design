@@ -150,14 +150,14 @@ class CFiSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.1,0.1,0.0001,0.0001],update=1.618):
+    def __Phase_one(self,step_size=[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],update=1.618):
         #step_size *= len(self.x) 
         minize_value_list = []
         value_list = []
         minize_value_list.append(self.set_x(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.set_x([0,0,0,0])):
+        if (minize_value_list[0] >= self.set_x([0,0,0,0,0,0,0,0,0])):
             print('fss final:',value_list[0])
             return value_list[0]
         for i in range(100):                
