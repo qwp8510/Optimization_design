@@ -65,7 +65,7 @@ class CForwardDiff():
                                                            if i==j else val for j,val in enumerate(self.x)]
             self.forword_value_cols['forword_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
                                                                     self.set_x(self.x)) / self.descent_value_cols['descent_value_{}'.format(i)]
-        print(self.forword_value_cols,self.descent_value_cols)
+        #print(self.forword_value_cols,self.descent_value_cols)
         for num in self.forword_value_cols.values():
             forword_result += num**2
         print('forword_result:',forword_result**0.5)
