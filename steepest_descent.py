@@ -64,8 +64,8 @@ class CForwardDiff():
             self.for_value_cols['for_x_{}'.format(i)] = [val + self.descent_value_cols['descent_value_{}'.format(i)]\
                                                            if i==j else val for j,val in enumerate(self.x)]
             self.forword_value_cols['forword_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
-                                                                    self.set_x(self.x)) / (self.descent_value_cols['descent_value_{}'.format(i)])
-        
+                                                                    self.set_x(self.x)) / self.descent_value_cols['descent_value_{}'.format(i)]
+        print(self.forword_value_cols,self.descent_value_cols)
         for num in self.forword_value_cols.values():
             forword_result += num**2
         print('forword_result:',forword_result**0.5)
@@ -158,7 +158,6 @@ class CCentralDiff():
         self.x = x0
         return self.Central_diff()
 
-
     def Central_diff(self):
         central_result = 0 # initial
         for i in range(self.dim):
@@ -182,9 +181,7 @@ class CCentralDiff():
         yield central_result**0.5
 
 
-if __name__ == "__main__":
-    # percent = perturbation， percent*x 萬一太小後面要加 self.eps  ,set_dim(維度)
-
-    #CForwardDiff(Test2VarFun4, x_value, dim=2, eps = 1e-3, percent = 1e-2).GetGrad(0.1)
-    CBackwardDiff(Test2VarFun2, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1,x_value)
-    #CCentralDiff(Test2VarFun4, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1)
+# if __name__ == "__main__":
+#     CForwardDiff(Test2VarFun4, x_value, dim=2, eps = 1e-3, percent = 1e-2).GetGrad(0.1)
+#     CBackwardDiff(Test2VarFun2, x_value, dim=2, eps = 1e-5, percent = 1e-5).GetGrad(0.1,x_value)
+#     CCentralDiff(Test2VarFun4, x_value, dim=2, eps = 1e-5, percent = 1e-2).GetGrad(0.1)

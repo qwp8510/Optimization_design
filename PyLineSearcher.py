@@ -130,7 +130,7 @@ class CFiSearch():
                         5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155, 165580141, 267914296, 
                         433494437, 701408733, 1134903170, 1836311903, 2971215073, 4807526976, 7778742049, 12586269025 ]
 
-    def __init__(self,costfun,x=0,d=1,eps=0.0001):
+    def __init__(self,costfun,x=0,d=1,eps=0.001):
         self.costfun = costfun
         self.x = x
         self.d = d
@@ -224,7 +224,7 @@ class CFiSearch():
                 print('weird situation: eigen > limit')
             else:
                 func_value = 0.5 * (up_bond + low_bond)
-                print(func_value,'result:',self.set_x(func_value))
+                print('result lr_rate:',func_value)
 
         if ( x_1_minize_value > x_2_minize_value):
             up_bond = x_1
@@ -234,7 +234,7 @@ class CFiSearch():
                 print('weird situation: eigen > limit')
             else:
                 func_value = 0.5 * (up_bond + low_bond)
-                print(func_value,'result:',self.set_x(func_value))
+                print('result lr_rate:',func_value)
 
         if ( x_1_minize_value == x_2_minize_value):
             up_bond = x_1
@@ -244,10 +244,10 @@ class CFiSearch():
                 print('weird situation: eigen > limit')
             else:
                 func_value = 0.5 * (up_bond + low_bond)
-                print(func_value,'result:',self.set_x(func_value))
+                print('result lr_rate:',func_value)
         return func_value
 
-    def __Phase_two(self,final_range=0.0001,low_bond=0,scaler=0.382):
+    def __Phase_two(self,final_range=0.001,low_bond=0,scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
         interval = self.__Phase_one()
         #low、up_bond 分別為上下邊界，x1、x2為產生的點

@@ -56,11 +56,11 @@ class CGradDecent():
     def RunOptimization(self):
         lr_rate = 0.1
         if self.Gradient == 'Forword':
-            _Diff = CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
+            _Diff = CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-5)
         if self.Gradient == 'Backword':
-            _Diff = CBackwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
+            _Diff = CBackwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-5)
         if self.Gradient == 'Central':
-            _Diff = CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-2)
+            _Diff = CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-5)
         if self.LineSearch == 'GsS':
             _LineSearch = CGSSearch
         if self.LineSearch == 'FiS':
@@ -82,9 +82,9 @@ class CGradDecent():
 
 
 if __name__ == '__main__':
-    x0 = [1,2,3,4]
-    dim = 4
-    CGradDecent(PowellFun, x0, dim, Gradient = 'Central',LineSearch = 'GsS', MinNorm = 0.01, MaxIter = 150000).RunOptimization()
+    x0 = [1,2]
+    dim = 2
+    CGradDecent(Test2VarFun2, x0, dim, Gradient = 'Forword',LineSearch = 'FiS', MinNorm = 0.0001, MaxIter = 150000).RunOptimization()
 
 """ test report:
 11/21: central,for,back:做func3 在x0設其他點會有問題
