@@ -45,6 +45,7 @@ class CForwardDiff():
 
     def set_dim(self, dim):
         self.dim = dim
+
     def set_eps(self, eps):
         self.eps = eps
 
@@ -65,13 +66,9 @@ class CForwardDiff():
                                                            if i==j else val for j,val in enumerate(self.x)]
             self.forword_value_cols['forword_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
                                                                     self.set_x(self.x)) / self.descent_value_cols['descent_value_{}'.format(i)]
-        #print(self.forword_value_cols,self.descent_value_cols)
-        for num in self.forword_value_cols.values():
-            forword_result += num**2
+            forword_result += self.forword_value_cols['forword_x_{}'.format(i)]**2
+            yield self.forword_value_cols['forword_x_{}'.format(i)]
         print('forword_result:',forword_result**0.5)
-
-        for i in self.forword_value_cols:
-            yield self.forword_value_cols[i]
         yield forword_result**0.5
  
         
@@ -96,6 +93,7 @@ class CBackwardDiff():
 
     def set_dim(self, dim):
         self.dim = dim
+
     def set_eps(self, eps):
         self.eps = eps
 
@@ -111,18 +109,14 @@ class CBackwardDiff():
         descent_value_cols = ['descent_value_{}'.format(i) for i in range(self.dim)]
         for i in range(self.dim):
             self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps 
-            
         for i in range(self.dim):    
             self.back_value_cols['back_x_{}'.format(i)] = [val - self.descent_value_cols['descent_value_{}'.format(i)]\
                                                            if i==j else val for j,val in enumerate(self.x)]
             self.backword_value_cols['backword_x_{}'.format(i)] = (self.set_x(self.x) - self.set_x(self.back_value_cols['back_x_{}'.format(i)]))\
                                                                      / self.descent_value_cols['descent_value_{}'.format(i)]     
-        for num in self.backword_value_cols.values():
-            backword_result += num**2
+            backword_result += self.backword_value_cols['backword_x_{}'.format(i)]**2
+            yield self.backword_value_cols['backword_x_{}'.format(i)]
         print('backword_result',backword_result**0.5)
-
-        for i in self.backword_value_cols:
-            yield self.backword_value_cols[i]
         yield backword_result**0.5
 
 
@@ -148,6 +142,7 @@ class CCentralDiff():
 
     def set_dim(self, dim):
         self.dim = dim
+
     def set_eps(self, eps):
         self.eps = eps
 
@@ -162,7 +157,6 @@ class CCentralDiff():
         central_result = 0 # initial
         for i in range(self.dim):
             self.descent_value_cols['descent_value_{}'.format(i)] = self.percent * self.x[i] + self.eps 
-        
         for i in range(self.dim):   
             self.for_value_cols['for_x_{}'.format(i)] = [val + self.descent_value_cols['descent_value_{}'.format(i)]\
                                                            if i==j else val for j,val in enumerate(self.x)]
@@ -171,13 +165,10 @@ class CCentralDiff():
 
             self.central_value_cols['central_x_{}'.format(i)] = (self.set_x(self.for_value_cols['for_x_{}'.format(i)]) - \
                                                                     self.set_x(self.back_value_cols['back_x_{}'.format(i)])) / (self.descent_value_cols['descent_value_{}'.format(i)])
-
-        for num in self.central_value_cols.values():
-            central_result += num**2
+            central_result += self.central_value_cols['central_x_{}'.format(i)]**2
+            yield self.central_value_cols['central_x_{}'.format(i)]
         print('central_result',central_result**0.5)
 
-        for i in self.central_value_cols:
-            yield self.central_value_cols[i]
         yield central_result**0.5
 
 

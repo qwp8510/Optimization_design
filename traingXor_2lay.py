@@ -1,5 +1,6 @@
 from optimization import CGradDecent
 import numpy as np
+import time
 
 def _activation(x):
     return 1/(1 + np.exp(-x))
@@ -29,14 +30,16 @@ def neural_predict(x,in1,in2):
     return f
     
 if __name__ == '__main__':
+    st = time.time()
     x0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    #xpot = CGradDecent(neural_learning, x0, 9, Gradient='Central', LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 300000).RunOptimization()
-    xpot = [6.2763870796984005, 6.276624154295818, -9.586595138099005, 8.009982570820826, 8.01090375646171, 
--3.7173554243791616, -16.022370279421505, 15.428295873785036, -7.418001687879613]
+    xpot = CGradDecent(neural_learning, x0, 9, Gradient='Forword', LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 300000).RunOptimization()
+#     xpot = [6.2763870796984005, 6.276624154295818, -9.586595138099005, 8.009982570820826, 8.01090375646171, 
+# -3.7173554243791616, -16.022370279421505, 15.428295873785036, -7.418001687879613]
     neural_learning(x0)
     neural_learning(xpot)
     neural_predict(x0,[0,0,1,1],[0,1,0,1])
     neural_predict(xpot,[0,0,1,1],[0,1,0,1])
+    print('time:',time.time()-st)
 
 """
 

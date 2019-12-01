@@ -38,14 +38,17 @@ class CGSSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],update=1.618):
-        #step_size *= len(self.x) 
+    def __Phase_one(self,update=1.618):
+        step_size = [0.1]
+        origin_size = [0]
+        step_size *= len(self.x)
+        origin_size *= len(self.x)
         minize_value_list = []
         value_list = []
         minize_value_list.append(self.set_x(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.set_x([0,0,0,0,0,0,0,0,0])):
+        if (minize_value_list[0] >= self.set_x(origin_size)):
             print('fss final:',value_list[0])
             return value_list[0]
         for i in range(100):                
@@ -150,14 +153,17 @@ class CFiSearch():
     def Runsearch(self):
         return self.__Phase_two()
 
-    def __Phase_one(self,step_size=[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],update=1.618):
-        #step_size *= len(self.x) 
+    def __Phase_one(self,update=1.618):
+        step_size = [0.1]
+        origin_size = [0]
+        step_size *= len(self.x)
+        origin_size *= len(self.x)
         minize_value_list = []
         value_list = []
         minize_value_list.append(self.set_x(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.set_x([0,0,0,0,0,0,0,0,0])):
+        if (minize_value_list[0] >= self.set_x(origin_size)):
             print('fss final:',value_list[0])
             return value_list[0]
         for i in range(100):                
@@ -198,7 +204,7 @@ class CFiSearch():
         if ( x_1_minize_value > x_2_minize_value):
             low_side_value = x_1
             x_1 = x_2
-            scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time]) #計算下一個scaler
+            scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time]) 
             eigenvalue = self.Eigenvalue(scaler,low_side_value,up_side_value)
             x_2 = up_side_value - eigenvalue
 
