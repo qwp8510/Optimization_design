@@ -29,13 +29,11 @@ class CGSSearch():
         self.costfun = costfun
 
     def set_x(self,x):
-        # 將x傳回function
         self.x = x
 
     def set_d(self,d):
         self.d = d
 
-    #def Runsearch(self,rate,update):    
     def Runsearch(self):
         return self.__Phase_two()
 
@@ -135,12 +133,10 @@ class CFiSearch():
         self.eps = eps
 
     def set_costfun(self,costfun):
-        return costfun(self.func_x)
+        self.costfun = costfun
 
     def set_x(self,x):
-        # 將x傳回function
-        self.func_x = x
-        return self.set_costfun(self.costfun)
+        self.x = x
 
     def set_d(self,d):
         self.d = d
