@@ -28,14 +28,14 @@ def PowellFun(x):
 # x* = [0, 0, 0, 0], f(x*) = 0;
 
 class CGradDecent():
-    def __init__(self, costfun, x0, dim, Gradient = 'Backward',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 1000):
+    def __init__(self, costfun, x0, Gradient = 'Backward',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 1000):
         self.costfun = costfun
         self.x0 = x0
-        self.dim = dim
         self.Gradient = Gradient
         self.LineSearch = LineSearch
         self.MinNorm = MinNorm
         self.MaxIter = MaxIter
+        self.dim = len(self.x0)
 
     def set_costfun(self,costfun):
         return costfun(self.func_x)
@@ -76,7 +76,7 @@ class CGradDecent():
                 f_value = self.set_x0(self.x0)
                 print('result at:',i,self.x0,f_value)
                 return self.x0  
-            lr_rate = _LineSearch(self.costfun, x=self.x0,d=d).Runsearch()
+            lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch()
             self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
 
         print('over iter:',i,self.x0,self.set_x0(self.x0))
@@ -85,8 +85,7 @@ class CGradDecent():
 if __name__ == '__main__':
     st = time.time()
     x0 = [1,2]
-    dim = 2
-    CGradDecent(Test2VarFun2, x0, dim, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.0001, MaxIter = 150000).RunOptimization()
+    CGradDecent(Test2VarFun2, x0, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 150000).RunOptimization()
     print(time.time()-st)
 
 """ test report:
