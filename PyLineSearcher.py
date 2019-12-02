@@ -26,12 +26,11 @@ class CGSSearch():
         self.eps = eps
 
     def set_costfun(self,costfun):
-        return costfun(self.func_x)
+        self.costfun = costfun
 
     def set_x(self,x):
         # 將x傳回function
-        self.func_x = x
-        return self.set_costfun(self.costfun)
+        self.x = x
 
     def set_d(self,d):
         self.d = d
@@ -47,15 +46,15 @@ class CGSSearch():
         origin_size *= len(self.x)
         minize_value_list = []
         value_list = []
-        minize_value_list.append(self.set_x(step_size))
+        minize_value_list.append(self.costfun(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.set_x(origin_size)):
+        if (minize_value_list[0] >= self.costfun(origin_size)):
             print('fss final:',value_list[0])
             return value_list[0]
         for i in range(100):                
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
-            minize_value = self.set_x(value)
+            minize_value = self.costfun(value)
             value_list.append(value)
             minize_value_list.append(minize_value)
             #最後收斂極限
@@ -104,8 +103,8 @@ class CGSSearch():
             x_1_value = list(map(lambda i,y: i + x_1 * y, self.x, self.d))
             x_2_value = list(map(lambda i,y: i + x_2 * y, self.x, self.d))
             print('phase 2:',x_1_value,x_2_value)
-            x_1_minize_value = self.set_x(x_1_value)
-            x_2_minize_value = self.set_x(x_2_value)
+            x_1_minize_value = self.costfun(x_1_value)
+            x_2_minize_value = self.costfun(x_2_value)
 
             x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                 self.Iteration_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler)
@@ -114,7 +113,7 @@ class CGSSearch():
             if ( up_bond - low_bond < self.eps):
                 finel_value = list(map(lambda i,y: i + ((up_bond + low_bond) * 0.5) * y, self.x, self.d))
                 learning_rate = (up_bond + low_bond) * 0.5
-                final_minize_value = self.set_x(finel_value)
+                final_minize_value = self.costfun(finel_value)
                 print('pyline search 收斂結果',i,learning_rate,final_minize_value)
                 return learning_rate
         print('over iter at phase2')
@@ -156,15 +155,15 @@ class CFiSearch():
         origin_size *= len(self.x)
         minize_value_list = []
         value_list = []
-        minize_value_list.append(self.set_x(step_size))
+        minize_value_list.append(self.costfun(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.set_x(origin_size)):
+        if (minize_value_list[0] >= self.costfun(origin_size)):
             print('fss final:',value_list[0])
             return value_list[0]
         for i in range(100):                
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
-            minize_value = self.set_x(value)
+            minize_value = self.costfun(value)
             value_list.append(value)
             minize_value_list.append(minize_value)
             #最後收斂極限
@@ -214,8 +213,8 @@ class CFiSearch():
 
     def Final_Fib_iteration(self,x_1,x_2,low_bond,up_bond,final_range):
         x_1_value, x_2_value = self.Multi_dimension(x_1, x_2)
-        x_1_minize_value = self.set_x(x_1_value)
-        x_2_minize_value = self.set_x(x_2_value)
+        x_1_minize_value = self.costfun(x_1_value)
+        x_2_minize_value = self.costfun(x_2_value)
 
         if ( x_1_minize_value < x_2_minize_value):
             up_bond = x_2
@@ -278,8 +277,8 @@ class CFiSearch():
                     x_2 = low_bond + (1 - scaler) * interval[0]
                     up_bond = low_bond + interval[0]  
                     x_1_value, x_2_value = self.Multi_dimension(x_1, x_2)
-                    x_1_minize_value = self.set_x(x_1_value)
-                    x_2_minize_value = self.set_x(x_2_value)
+                    x_1_minize_value = self.costfun(x_1_value)
+                    x_2_minize_value = self.costfun(x_2_value)
 
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
@@ -287,8 +286,8 @@ class CFiSearch():
                 else:
                     #大部分迭代
                     x_1_value, x_2_value = self.Multi_dimension(x_1, x_2)
-                    x_1_minize_value = self.set_x(x_1_value)
-                    x_2_minize_value = self.set_x(x_2_value)
+                    x_1_minize_value = self.costfun(x_1_value)
+                    x_2_minize_value = self.costfun(x_2_value)
 
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
