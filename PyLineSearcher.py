@@ -65,7 +65,7 @@ class CGSSearch():
                     print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
                     return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
-        return value
+        return value_list[-3][0], value_list[-1][0]
                 
     # phase two
     def Iteration_define(self,x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low_side_value,scaler):
@@ -155,7 +155,7 @@ class CFiSearch():
 
         if (minize_value_list[0] >= self.costfun(origin_size)):
             print('fss final:',value_list[0])
-            return value_list[0]
+            return 0, value_list[0][0]
         for i in range(100):                
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
             minize_value = self.costfun(value)
@@ -165,13 +165,13 @@ class CFiSearch():
             if i == 0:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
                     print('fis final:',minize_value_list[-2])
-                    return value_list[-2]
+                    return 0, value_list[-2][0]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
                     print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
-                    return value_list[-2]
+                    return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
-        return value
+        return value_list[-3][0], value_list[-1][0]
 
     def Multi_dimension(self,x_1,x_2):
         """ x1 = x0 + step_size * d
@@ -244,10 +244,10 @@ class CFiSearch():
 
     def __Phase_two(self, low_bond=0, scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
-        interval = self.__Phase_one()
+        low_bond, up_bond = self.__Phase_one()
         final_range = self.eps
         #low、up_bond 分別為上下邊界，x1、x2為產生的點
-        F_N = ((1 + 2*self.eps) * (interval[0])) / final_range   # F_N = fibonacci 某一值
+        F_N = ((1 + 2*self.eps) * (up_bond-low_bond)) / final_range   # F_N = fibonacci 某一值
         if F_N not in self.fibonacci_count:        
             N = sorted(self.fibonacci_count + [F_N]).index(F_N) + 1 - 1  # +1為選取我要的fibonacci數列中的值 N = 迭代次數 (F_N 為 N+1 所以算出來要減1)
         else:
@@ -268,9 +268,8 @@ class CFiSearch():
                 if i == N:
                     #初次迭代
                     scaler = 1 - (self.fibonacci_count[i]/self.fibonacci_count[i+1])
-                    x_1 = low_bond + scaler * interval[0]
-                    x_2 = low_bond + (1 - scaler) * interval[0]
-                    up_bond = low_bond + interval[0]  
+                    x_1 = low_bond + Eigenvalue(scaler,low_bond,up_bond)
+                    x_2 = up_bond - Eigenvalue(scaler,low_bond,up_bond)
                     x_1_value, x_2_value = self.Multi_dimension(x_1, x_2)
                     x_1_minize_value = self.costfun(x_1_value)
                     x_2_minize_value = self.costfun(x_2_value)

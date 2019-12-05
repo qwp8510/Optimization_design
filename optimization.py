@@ -80,7 +80,7 @@ class CGradDecent():
 if __name__ == '__main__':
     st = time.time()
     x0 = [1,2]
-    CGradDecent(Test2VarFun4, x0, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 150000).RunOptimization()
+    CGradDecent(Test2VarFun2, x0, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 150000).RunOptimization()
     print(time.time()-st)
 
 """ test report:
