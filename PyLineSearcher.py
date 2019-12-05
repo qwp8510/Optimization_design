@@ -49,7 +49,7 @@ class CGSSearch():
 
         if (minize_value_list[0] >= self.costfun(origin_size)):
             print('fss final:',value_list[0])
-            return value_list[0]
+            return 0, value_list[0][0]
         for i in range(100):                
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
             minize_value = self.costfun(value)
@@ -59,11 +59,11 @@ class CGSSearch():
             if i == 0:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
                     print('fss final:',minize_value_list[-2])
-                    return value_list[-2]
+                    return 0, value_list[-2][0]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
                     print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
-                    return value_list[-2]
+                    return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
         return value
                 
@@ -90,11 +90,10 @@ class CGSSearch():
 
 
     def __Phase_two(self,low_bond=0,scaler=0.382):
-        interval = self.__Phase_one()
+        low_bond, up_bond = self.__Phase_one()
         
-        x_1 = low_bond + scaler * interval[0]
-        x_2 = low_bond + (1 - scaler) * interval[0]
-        up_bond = low_bond + interval[0]   
+        x_1 = low_bond + Eigenvalue(scaler,low_bond,up_bond)
+        x_2 = up_bond - Eigenvalue(scaler,low_bond,up_bond)
         #x_1、x_2間距 = (1 - 2*scaler) * eigenvalue
 
         for i in range(0,1000):
