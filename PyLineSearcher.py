@@ -66,10 +66,18 @@ class CGSSearch():
                     return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
         return value_list[-3][0], value_list[-1][0]
-                
+
+    def Multi_dimension(self,x_1,x_2):
+        """ x1 = x0 + step_size * d
+            x1: new learning rate
+            d: gradient direction
+        """
+        x_1_value = list(map(lambda i,y: i + x_1 * y, self.x, self.d))
+        x_2_value = list(map(lambda i,y: i + x_2 * y, self.x, self.d))
+        return x_1_value, x_2_value
+
     # phase two
     def Iteration_define(self,x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low_side_value,scaler):
-        
         if ( x_1_minize_value < x_2_minize_value):
             up_side_value = x_2
             x_2 = x_1
@@ -97,9 +105,7 @@ class CGSSearch():
         #x_1、x_2間距 = (1 - 2*scaler) * eigenvalue
 
         for i in range(0,1000):
-            x_1_value = list(map(lambda i,y: i + x_1 * y, self.x, self.d))
-            x_2_value = list(map(lambda i,y: i + x_2 * y, self.x, self.d))
-            print('phase 2:',x_1_value,x_2_value)
+            x_1_value, x_2_value =  self.Multi_dimension(x_1, x_2)
             x_1_minize_value = self.costfun(x_1_value)
             x_2_minize_value = self.costfun(x_2_value)
 
@@ -140,11 +146,12 @@ class CFiSearch():
     def set_d(self,d):
         self.d = d
 
-    def Runsearch(self):
-        return self.__Phase_two()
+    def Runsearch(self, step_size=0.1):
+        return self.__Phase_two(step_size)
 
-    def __Phase_one(self,update=1.618):
-        step_size = [0.1]
+    def __Phase_one(self, step_size, update=1.618):
+        print("step_size:",step_size)
+        step_size = [step_size]
         origin_size = [0]
         step_size *= len(self.x)
         origin_size *= len(self.x)
@@ -187,22 +194,22 @@ class CFiSearch():
             up_side_value = x_2
             x_2 = x_1
             scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time]) #計算下一個scaler
-            eigenvalue = Eigenvalue(scaler,low_side_value,up_side_value)
-            x_1 = low_side_value + eigenvalue
+            print('*^*^^*^*^*^:',up_side_value,x_2,low_side_value)
+            x_1 = low_side_value + Eigenvalue(scaler,low_side_value,up_side_value)
 
         if ( x_1_minize_value > x_2_minize_value):
             low_side_value = x_1
             x_1 = x_2
-            scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time]) 
-            eigenvalue = Eigenvalue(scaler,low_side_value,up_side_value)
-            x_2 = up_side_value - eigenvalue
+            scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time])
+            print('*^*^^*^*^*^:',up_side_value,x_2,low_side_value)
+            x_2 = up_side_value - Eigenvalue(scaler,low_side_value,up_side_value)
 
         if ( x_1_minize_value == x_2_minize_value):
             low_side_value = x_1
             up_side_value = x_2
             scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time])
-            x_1 = low_side_value + Eigenvalue(scaler,low_side_value,up_side_value + self.eps)
-            x_2 = up_side_value - Eigenvalue(scaler,low_side_value,up_side_value + self.eps)
+            x_1 = low_side_value + Eigenvalue(scaler,low_side_value,up_side_value+self.eps)
+            x_2 = up_side_value - Eigenvalue(scaler,low_side_value,up_side_value+self.eps)
 
         return x_1_minize_value,x_2_minize_value,x_1,x_2,up_side_value,low_side_value,scaler
 
@@ -232,6 +239,7 @@ class CFiSearch():
                 print('result lr_rate:',func_value)
 
         if ( x_1_minize_value == x_2_minize_value):
+            print('--=-=-=-=-=-==-=-=-=',x_1,x_2,x_1_minize_value,  x_2_minize_value)
             up_bond = x_1
             low_bond = x_2
             eigen = abs(up_bond - low_bond)
@@ -239,16 +247,16 @@ class CFiSearch():
                 print('weird situation: eigen > limit')
             else:
                 func_value = 0.5 * (up_bond + low_bond)
-                print('result lr_rate:',func_value)
+                print('result lr_rate:',up_bond,low_bond,func_value)
         return func_value
 
-    def __Phase_two(self, low_bond=0, scaler=0.382):
+    def __Phase_two(self, step_size, low_bond=0, scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
-        low_bond, up_bond = self.__Phase_one()
+        low_bond, up_bond = self.__Phase_one(step_size)
         final_range = self.eps
         #low、up_bond 分別為上下邊界，x1、x2為產生的點
         F_N = ((1 + 2*self.eps) * (up_bond-low_bond)) / final_range   # F_N = fibonacci 某一值
-        if F_N not in self.fibonacci_count:        
+        if F_N not in self.fibonacci_count:      
             N = sorted(self.fibonacci_count + [F_N]).index(F_N) + 1 - 1  # +1為選取我要的fibonacci數列中的值 N = 迭代次數 (F_N 為 N+1 所以算出來要減1)
         else:
             N = self.fibonacci_count.index(F_N) - 1
@@ -258,6 +266,7 @@ class CFiSearch():
                 #最後迭代
                 scaler = 0.5 - self.eps
                 eigenvalue = Eigenvalue(scaler,low_bond,up_bond)
+                print('////// bond:',low_bond,up_bond)
                 x_1 = low_bond + eigenvalue
                 x_2 = up_bond - eigenvalue
 
@@ -273,7 +282,6 @@ class CFiSearch():
                     x_1_value, x_2_value = self.Multi_dimension(x_1, x_2)
                     x_1_minize_value = self.costfun(x_1_value)
                     x_2_minize_value = self.costfun(x_2_value)
-
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
                     
@@ -282,9 +290,9 @@ class CFiSearch():
                     x_1_value, x_2_value = self.Multi_dimension(x_1, x_2)
                     x_1_minize_value = self.costfun(x_1_value)
                     x_2_minize_value = self.costfun(x_2_value)
-
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
+                    print('!!!!!!',x_1,x_2)
 
 
 # if __name__ == '__main__':

@@ -71,7 +71,7 @@ class CGradDecent():
                 f_value = self.costfun(self.x0)
                 print('result at:',i,self.x0,f_value)
                 return self.x0  
-            lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch()
+            lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch(lr_rate)
             self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
 
         print('over iter:',i,self.x0,self.costfun(self.x0))

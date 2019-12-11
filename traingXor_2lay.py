@@ -32,7 +32,7 @@ def neural_predict(x,in1,in2):
 if __name__ == '__main__':
     st = time.time()
     x0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    xpot = CGradDecent(neural_learning, x0, 9, Gradient='Forword', LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 300000).RunOptimization()
+    xpot = CGradDecent(neural_learning, x0, Gradient='Forword', LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 300000).RunOptimization()
 #     xpot = [6.2763870796984005, 6.276624154295818, -9.586595138099005, 8.009982570820826, 8.01090375646171, 
 # -3.7173554243791616, -16.022370279421505, 15.428295873785036, -7.418001687879613]
     neural_learning(x0)
@@ -69,6 +69,8 @@ err 0.001518226924882754
 
 8 preidct: 原:err: 1.2449576748954105,predict: [0.86040223 0.87390429 0.87033548 0.88142759]
            新:err: 0.0015182213926920065,predict: [8.63963842e-04 9.99281739e-01 9.99281696e-01 7.25742659e-04]
+
+9 runtime: 271 S
  """
 
 
