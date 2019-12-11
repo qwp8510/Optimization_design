@@ -1,19 +1,32 @@
+import numpy as np
+
 class Neuron():
+    """
+    Provide basic functions of a neuron, including feed-forward
+    and feed-backward computations
+    
+    """
+    inp_dict = {}
+    z_dict = {}
     def __init__(self, weights_vec, bias):
         self.weights_vec = weights_vec
         self.bias = bias
 
     def forward(self, inputs):
-        w11, w12, w21, w22, w31, w32 =  self.weights_vec[0], self.weights_vec[1], self.weights_vec[3],\
-            self.weights_vec[4], self.weights_vec[6], self.weights_vec[7]
-        b1,b2,b3 = self.weights_vec[2], self.weights_vec[5], self.weights_vec[8]
+        temp_err = 0
+        inputs = np.array(inputs)
         x_1, x_2, y_d = inputs[0], inputs[1], inputs[2]
-        z_1, z_2 = _activation(w11*x_1 + w12*x_2 + b1), _activation(w21*x_1 + w22*x_2 + b2)
-        err = y_d - _activation(w31*z_1 + w32*z_2 + b3)
+        for i in range(0, len(inputs)-1, 1):
+            temp_nur = 0
+            for j in range(0, len(inputs)-1, 1):
+                temp_nur += inputs[j] * self.weights_vec[j]
+                del self.weights_vec[0]
+            temp_nur += self.bias[j]
+            z_dict['z_{}'.format(i)] = self.__sigmoid(temp_nur)
+            temp_err += z_dict['z_{}'.format(i)] * self.weights_vec[-(len(inputs)-1-i)]
+        err = inputs[-1] - self.__sigmoid(temp_err + self.bias[-1])
         err = np.linalg.norm(err)
-        print('err:',err)
         return err
-
 
     def backward(self, error):
     
