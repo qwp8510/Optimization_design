@@ -71,7 +71,7 @@ class CGradDecent():
                 f_value = self.costfun(self.x0)
                 print('result at:',i,self.x0,f_value)
                 return self.x0  
-            lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch(lr_rate)
+            lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch()
             self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
 
         print('over iter:',i,self.x0,self.costfun(self.x0))
@@ -80,7 +80,7 @@ class CGradDecent():
 if __name__ == '__main__':
     st = time.time()
     x0 = [1,2]
-    CGradDecent(Test2VarFun2, x0, Gradient = 'Central',LineSearch = 'FiS', MinNorm = 0.001, MaxIter = 150000).RunOptimization()
+    CGradDecent(Test2VarFun2, x0, Gradient = 'Central',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 150000).RunOptimization()
     print(time.time()-st)
 
 """ test report:

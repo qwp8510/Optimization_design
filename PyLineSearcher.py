@@ -149,9 +149,8 @@ class CFiSearch():
     def Runsearch(self, step_size=0.1):
         return self.__Phase_two(step_size)
 
-    def __Phase_one(self, step_size, update=1.618):
-        print("step_size:",step_size)
-        step_size = [step_size]
+    def __Phase_one(self, update=1.618):
+        step_size = [0.1]
         origin_size = [0]
         step_size *= len(self.x)
         origin_size *= len(self.x)
@@ -250,9 +249,9 @@ class CFiSearch():
                 print('result lr_rate:',up_bond,low_bond,func_value)
         return func_value
 
-    def __Phase_two(self, step_size, low_bond=0, scaler=0.382):
+    def __Phase_two(self, low_bond=0, scaler=0.382):
         #計算迭代次數:(1+2*limit)/fibonacci_(n+1) <= final_uncertain_range/initial_uncertain_range
-        low_bond, up_bond = self.__Phase_one(step_size)
+        low_bond, up_bond = self.__Phase_one()
         final_range = self.eps
         #low、up_bond 分別為上下邊界，x1、x2為產生的點
         F_N = ((1 + 2*self.eps) * (up_bond-low_bond)) / final_range   # F_N = fibonacci 某一值

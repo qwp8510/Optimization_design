@@ -36,7 +36,7 @@ def neural_predict(x,in1,in2,in3):
 if __name__ == '__main__':
     st = time.time()
     x0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77]
-    xpot = CGradDecent(neural_learning, x0, Gradient='Central', LineSearch = 'FiS', MinNorm = 0.0001, MaxIter = 600000).RunOptimization()
+    xpot = CGradDecent(neural_learning, x0, Gradient='Central', LineSearch = 'GsS', MinNorm = 0.0001, MaxIter = 600000).RunOptimization()
 #     xpot = [5.955828125246641, 5.955825329770617, 5.955828544139004, -15.104984818286981, 8.431519448991988, 8.43147317369757,
 #  8.431524425573942, -3.9828506469904776, 8.84586591573428, 8.845850750220881, 8.845868052806239, -13.109316450012306,
 #   21.605390645382293, 19.98229254453061, -21.072313302683746, -9.712646459642116]
