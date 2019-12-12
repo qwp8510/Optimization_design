@@ -38,7 +38,7 @@ class CGSSearch():
         return self.__Phase_two()
 
     def __Phase_one(self,update=1.618):
-        step_size = [0.1]
+        step_size = [300]
         origin_size = [0]
         step_size *= len(self.x)
         origin_size *= len(self.x)
@@ -48,7 +48,7 @@ class CGSSearch():
         value_list.append(step_size)
 
         if (minize_value_list[0] >= self.costfun(origin_size)):
-            print('fss final:',value_list[0])
+            #print('fss final:',value_list[0])
             return 0, value_list[0][0]
         for i in range(100):                
             value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
@@ -58,11 +58,11 @@ class CGSSearch():
             #最後收斂極限
             if i == 0:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
-                    print('fss final:',minize_value_list[-2])
+                    #print('fss final:',minize_value_list[-2])
                     return 0, value_list[-2][0]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
-                    print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
+                    #print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
                     return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
         return value_list[-3][0], value_list[-1][0]
@@ -117,7 +117,7 @@ class CGSSearch():
                 finel_value = list(map(lambda i,y: i + ((up_bond + low_bond) * 0.5) * y, self.x, self.d))
                 learning_rate = (up_bond + low_bond) * 0.5
                 final_minize_value = self.costfun(finel_value)
-                print('pyline search 收斂結果',i,learning_rate,final_minize_value)
+                #print('pyline search 收斂結果',i,learning_rate,final_minize_value)
                 return learning_rate
         print('over iter at phase2')
         return 0.01
@@ -193,14 +193,12 @@ class CFiSearch():
             up_side_value = x_2
             x_2 = x_1
             scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time]) #計算下一個scaler
-            print('*^*^^*^*^*^:',up_side_value,x_2,low_side_value)
             x_1 = low_side_value + Eigenvalue(scaler,low_side_value,up_side_value)
 
         if ( x_1_minize_value > x_2_minize_value):
             low_side_value = x_1
             x_1 = x_2
             scaler = 1 - (self.fibonacci_count[time-1]/self.fibonacci_count[time])
-            print('*^*^^*^*^*^:',up_side_value,x_2,low_side_value)
             x_2 = up_side_value - Eigenvalue(scaler,low_side_value,up_side_value)
 
         if ( x_1_minize_value == x_2_minize_value):
@@ -265,7 +263,6 @@ class CFiSearch():
                 #最後迭代
                 scaler = 0.5 - self.eps
                 eigenvalue = Eigenvalue(scaler,low_bond,up_bond)
-                print('////// bond:',low_bond,up_bond)
                 x_1 = low_bond + eigenvalue
                 x_2 = up_bond - eigenvalue
 
@@ -291,7 +288,6 @@ class CFiSearch():
                     x_2_minize_value = self.costfun(x_2_value)
                     x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler =\
                         self.Iteration_Fib_define(x_1_minize_value,x_2_minize_value,x_1,x_2,up_bond,low_bond,scaler,i)
-                    print('!!!!!!',x_1,x_2)
 
 
 # if __name__ == '__main__':

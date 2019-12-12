@@ -52,11 +52,11 @@ class CGradDecent():
     def RunOptimization(self):
         lr_rate = 0.1
         if self.Gradient == 'Forword':
-            _Diff = CForwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-4)
+            _Diff = CForwardDiff(self.costfun, self.x0, self.dim, eps = 1e-6, percent = 1e-4)
         if self.Gradient == 'Backword':
             _Diff = CBackwardDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-4)
         if self.Gradient == 'Central':
-            _Diff = CCentralDiff(self.costfun, self.x0, self.dim, eps = self.MinNorm, percent = 1e-4)
+            _Diff = CCentralDiff(self.costfun, self.x0, self.dim, eps = 1e-6, percent = 1e-4)
         if self.LineSearch == 'GsS':
             _LineSearch = CGSSearch
         if self.LineSearch == 'FiS':
@@ -64,14 +64,15 @@ class CGradDecent():
 
         for i in range(self.MaxIter):
             descent_result = list(_Diff.GetGrad(lr_rate,self.x0))
-            print('descent_result',descent_result)
+            #print('descent_result',descent_result)
             d = list(map(lambda x: -x,descent_result))[:-1]
-            print('iter at:', i, self.x0, self.costfun(self.x0))
+            #print('iter at:', i, self.x0, self.costfun(self.x0))
             if (descent_result[-1] < self.MinNorm):
                 f_value = self.costfun(self.x0)
                 print('result at:',i,self.x0,f_value)
                 return self.x0  
             lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch()
+            print('rate:',lr_rate)
             self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
 
         print('over iter:',i,self.x0,self.costfun(self.x0))
@@ -80,7 +81,7 @@ class CGradDecent():
 if __name__ == '__main__':
     st = time.time()
     x0 = [1,2]
-    CGradDecent(Test2VarFun2, x0, Gradient = 'Central',LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 150000).RunOptimization()
+    CGradDecent(Test2VarFun1, x0, Gradient = 'Forword',LineSearch = 'FiS', MinNorm = 1e-3, MaxIter = 150000).RunOptimization()
     print(time.time()-st)
 
 """ test report:
