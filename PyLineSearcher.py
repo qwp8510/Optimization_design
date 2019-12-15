@@ -38,7 +38,7 @@ class CGSSearch():
         return self.__Phase_two()
 
     def __Phase_one(self,update=1.618):
-        step_size = [300]
+        step_size = [0.1]
         origin_size = [0]
         step_size *= len(self.x)
         origin_size *= len(self.x)
