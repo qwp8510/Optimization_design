@@ -14,20 +14,25 @@ class Neuron():
         self.bias = bias
 
     def forward(self, inputs):
+        y_r = [0.01, 0.99]  # by default temporily
         temp_err = 0
         inputs = np.array(inputs)
         for h in range(len(self.weights_vec)):
             inputs = list(self.__calculate_total_net_input(inputs , h))
             
             print(self.y_dict)
+        error = [0.5 * (y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2 for i in range(len(self.weights_vec[-1]))]
+        print(error)
+        self.backward(error)
 
     def backward(self, error):
+        delta = list(self.__node_delta(error))
         for h in range(len(self.weights_vec), -1, -1):
+            self.update_weights()
 
 
     def update_weights(self, lr = 0.1):
-        y_r1, y_r2 = 0.01, 0.99  # by default temporily
-        pass
+        for h in range(len(self.weights_vec), -1, -1):
 
     def __calculate_total_net_input(self,inp , h):
         for i in range(len(self.weights_vec[h])):
@@ -45,7 +50,9 @@ class Neuron():
 
     def __node_delta(self, error):
         # Apply the node delta function
-        y_r1, y_r2 = 0.01, 0.99  # by default temporily
+        for i in range(len(self.weights_vec[-1])):
+            y_o = self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)
+            yield -error[i] * y_o * (1 - y_o)
 
 
 if __name__ == '__main__':
