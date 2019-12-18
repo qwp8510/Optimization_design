@@ -47,22 +47,23 @@ class CGSSearch():
         minize_value_list.append(self.costfun(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.costfun(origin_size)):
-            #print('fss final:',value_list[0])
-            return 0, value_list[0][0]
         for i in range(100):                
-            value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
+            value = list(map(lambda h: h * (update)**i, step_size))
             minize_value = self.costfun(value)
             value_list.append(value)
             minize_value_list.append(minize_value)
             #最後收斂極限
             if i == 0:
+                if (minize_value_list[0] >= self.costfun(origin_size)):
+                    print('fss final 0 :',value_list[0])
+                    return 0, value_list[0][0]
+            elif i == 1:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
-                    #print('fss final:',minize_value_list[-2])
+                    print('fss final 1 :',value_list[-2][0])
                     return 0, value_list[-2][0]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
-                    #print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
+                    print('phase1 iter={}:'.format(i),value_list[-3][0], value_list[-1][0])
                     return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
         return value_list[-3][0], value_list[-1][0]
@@ -159,22 +160,23 @@ class CFiSearch():
         minize_value_list.append(self.costfun(step_size))
         value_list.append(step_size)
 
-        if (minize_value_list[0] >= self.costfun(origin_size)):
-            print('fss final:',value_list[0])
-            return 0, value_list[0][0]
         for i in range(100):                
-            value = list(map(lambda h: h * (update)**(i-1) * (1 + update),step_size))
+            value = list(map(lambda h: h * (update)**i, step_size))
             minize_value = self.costfun(value)
             value_list.append(value)
             minize_value_list.append(minize_value)
             #最後收斂極限
             if i == 0:
+                if (minize_value_list[0] >= self.costfun(origin_size)):
+                    print('fss final 0 :',value_list[0])
+                    return 0, value_list[0][0]
+            elif i == 1:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
-                    print('fis final:',minize_value_list[-2])
+                    print('fss final 1 :',value_list[-2][0])
                     return 0, value_list[-2][0]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
-                    print('phase1 iter={}:'.format(i),value_list[-2],minize_value_list[-2])
+                    print('phase1 iter={}:'.format(i),value_list[-3][0], value_list[-1][0])
                     return value_list[-3][0], value_list[-1][0]
         print('over iter at phase1',value)
         return value_list[-3][0], value_list[-1][0]
