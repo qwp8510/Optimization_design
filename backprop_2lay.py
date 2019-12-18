@@ -16,15 +16,17 @@ class Neuron():
     def forward(self, inputs):
         temp_err = 0
         inputs = np.array(inputs)
-        for h in range(len(weights_arrs)):
+        for h in range(len(self.weights_vec)):
             inputs = list(self.__calculate_total_net_input(inputs , h))
             
             print(self.y_dict)
 
     def backward(self, error):
-        
+        for h in range(len(self.weights_vec), -1, -1):
+
 
     def update_weights(self, lr = 0.1):
+        y_r1, y_r2 = 0.01, 0.99  # by default temporily
         pass
 
     def __calculate_total_net_input(self,inp , h):
