@@ -19,9 +19,11 @@ class Neuron():
         y_r = [0.01, 0.99]  # by default temporily
         temp_err = 0
         inputs = np.array(inputs)
+        for_inp = np.copy(inputs)
         for h in range(len(self.weights_vec)):
-            inputs = list(self.__calculate_total_net_input(inputs , h))
+            for_inp = list(self.__calculate_total_net_input(for_inp , h))
             
+            self.y_dict['h_-1y_{}'.format(h)] = inputs[h]
             print('forword y_dict: ', self.y_dict)
         error = [0.5 * (y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2 for i in range(len(self.weights_vec[-1]))]
         print('error: ', error)
@@ -31,18 +33,18 @@ class Neuron():
         
         for h in range(len(self.weights_vec), 0, -1):
             self.__node_delta(h, error)
-            #self.update_weights(h)
+            self.update_weights(h)
             #print(self.update_weight_dict)
-        print('delta:', self.delta)
-        print('back update_weight: ', self.update_weight_dict)
-        
+        print('\ndelta:', self.delta)
+        print('\nback update_weight: ', self.update_weight_dict)
 
 
     def update_weights(self, h, lr = 0.1):
-        for i in range(len(self.delta)):
+        for i in range(len(self.weights_vec[h-1])):
             for j in range(len(self.weights_vec[h-1][i])):
                 print("loc: ", h, i, j)
-                weight = self.weights_vec[h][i][j] + lr * self.delta['h_{}y_{}'.format(h-1, j)] * self.y_dict['h_{}y_{}'.format(h-2, j)]
+                #print("delta:::",self.delta)
+                weight = self.weights_vec[h-1][i][j] + lr * self.delta['h_{}y_{}'.format(h, i)] * self.y_dict['h_{}y_{}'.format(h-2, j)]
                 self.update_weight_dict['h_{}w_{}'.format(h, i)].append(weight)
                 
 
