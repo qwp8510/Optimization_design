@@ -1,4 +1,5 @@
 import numpy as np
+from collections import defaultdict
 
 class Neuron():
     """
@@ -8,7 +9,8 @@ class Neuron():
     """
     inp_dict = {}
     y_dict = {}
-    ready_weight = {}
+    update_weight_dict = defaultdict(list)
+    delta = {}
     def __init__(self, weights_vec, bias):
         self.weights_vec = weights_vec
         self.bias = bias
@@ -26,13 +28,20 @@ class Neuron():
         self.backward(error)
 
     def backward(self, error):
-        delta = list(self.__node_delta(error))
-        for h in range(len(self.weights_vec), -1, -1):
-            self.update_weights()
+        self.__node_delta(error)
+        for h in range(len(self.weights_vec) -1, -1, -1):
+            self.update_weights(h)
+            #print(self.update_weight_dict)
+        print(self.update_weight_dict)
 
 
-    def update_weights(self, lr = 0.1):
-        for h in range(len(self.weights_vec), -1, -1):
+    def update_weights(self, h, lr = 0.1):
+        for i in range(len(self.delta)):
+            for j in range(len(self.weights_vec[h][i])):
+                print("loc:", h, i, j)
+                weight = self.weights_vec[h][i][j] + lr * self.delta[i] * self.y_dict['h_{}y_{}'.format(h-1, j)]
+                self.update_weight_dict['h_{}w_{}'.format(h, i)].append(weight)
+                yield 
 
     def __calculate_total_net_input(self,inp , h):
         for i in range(len(self.weights_vec[h])):
@@ -50,9 +59,19 @@ class Neuron():
 
     def __node_delta(self, error):
         # Apply the node delta function
-        for i in range(len(self.weights_vec[-1])):
-            y_o = self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)
-            yield -error[i] * y_o * (1 - y_o)
+        if (self.delta):
+            for i in range(len(self.weights_vec[-1])):
+                y_o = self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)]
+                self.delta['h_{}y_{}'.format(len(self.weights_vec[-1]), i)] =  (-error[i]) * y_o * (1 - y_o)
+        else:
+            for i in range(self.weights_vec[k]):
+                tmp_delta = 0
+                for j in range(self.weights_vec[k][i]):
+                    tmp_delta = self.delta[i] * weights_vec[k][i][j]
+                y_o = self.y_dict['h_{}y_{}'.format(h, j)]
+                tmp_delta = tmp_delta * y_o * (1 - y_o)
+                self.delta['h_{}y_{}'] = tmp_delta
+
 
 
 if __name__ == '__main__':
