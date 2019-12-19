@@ -22,32 +22,34 @@ class Neuron():
         for h in range(len(self.weights_vec)):
             inputs = list(self.__calculate_total_net_input(inputs , h))
             
-            print(self.y_dict)
+            print('forword y_dict: ', self.y_dict)
         error = [0.5 * (y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2 for i in range(len(self.weights_vec[-1]))]
-        print(error)
+        print('error: ', error)
         self.backward(error)
 
     def backward(self, error):
-        self.__node_delta(error)
-        for h in range(len(self.weights_vec) -1, -1, -1):
-            self.update_weights(h)
+        
+        for h in range(len(self.weights_vec), 0, -1):
+            self.__node_delta(h, error)
+            #self.update_weights(h)
             #print(self.update_weight_dict)
-        print(self.update_weight_dict)
+        print('delta:', self.delta)
+        print('back update_weight: ', self.update_weight_dict)
+        
 
 
     def update_weights(self, h, lr = 0.1):
         for i in range(len(self.delta)):
-            for j in range(len(self.weights_vec[h][i])):
-                print("loc:", h, i, j)
-                weight = self.weights_vec[h][i][j] + lr * self.delta[i] * self.y_dict['h_{}y_{}'.format(h-1, j)]
+            for j in range(len(self.weights_vec[h-1][i])):
+                print("loc: ", h, i, j)
+                weight = self.weights_vec[h][i][j] + lr * self.delta['h_{}y_{}'.format(h-1, j)] * self.y_dict['h_{}y_{}'.format(h-2, j)]
                 self.update_weight_dict['h_{}w_{}'.format(h, i)].append(weight)
-                yield 
+                
 
     def __calculate_total_net_input(self,inp , h):
         for i in range(len(self.weights_vec[h])):
             temp_nur = 0
             for j in range(len(inp)):
-                print(inp[j],self.weights_vec[h])
                 temp_nur += inp[j] * self.weights_vec[h][i][j]
             temp_nur += self.bias[h][i]
             self.y_dict['h_{}y_{}'.format(h,i)] = self.__sigmoid(temp_nur)
@@ -57,20 +59,22 @@ class Neuron():
         # Apply the sigmoid activation function
         return 1/(1 + np.exp(-total_net_input))
 
-    def __node_delta(self, error):
+    def __node_delta(self, h, error):
         # Apply the node delta function
-        if (self.delta):
+        if (not self.delta):
             for i in range(len(self.weights_vec[-1])):
                 y_o = self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)]
-                self.delta['h_{}y_{}'.format(len(self.weights_vec[-1]), i)] =  (-error[i]) * y_o * (1 - y_o)
+                self.delta['h_{}y_{}'.format(h, i)] =  (-error[i]) * y_o * (1 - y_o)
         else:
-            for i in range(self.weights_vec[k]):
+            for i in range(len(self.weights_vec[h][0])):
                 tmp_delta = 0
-                for j in range(self.weights_vec[k][i]):
-                    tmp_delta = self.delta[i] * weights_vec[k][i][j]
-                y_o = self.y_dict['h_{}y_{}'.format(h, j)]
+                for j in range(len(self.weights_vec[h])):
+                    # print(h,i,j)
+                    # print(self.weights_vec[h],self.weights_vec[h][j][i])
+                    tmp_delta = self.delta['h_{}y_{}'.format(h+1, j)] * self.weights_vec[h][j][i]
+                y_o = self.y_dict['h_{}y_{}'.format(h-1, i)]
                 tmp_delta = tmp_delta * y_o * (1 - y_o)
-                self.delta['h_{}y_{}'] = tmp_delta
+                self.delta['h_{}y_{}'.format(h,i)] = tmp_delta
 
 
 
