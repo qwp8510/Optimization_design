@@ -1,5 +1,7 @@
 import numpy as np
 from collections import defaultdict
+from functools import reduce
+
 
 class Neuron():
     """
@@ -36,16 +38,20 @@ class Neuron():
             self.update_weights(h)
             #print(self.update_weight_dict)
         print('\ndelta:', self.delta)
+        self.update_weight_dict = reduce(lambda a, b: a + b, self.update_weight_dict.values())
+        
         print('\nback update_weight: ', self.update_weight_dict)
 
 
     def update_weights(self, h, lr = 0.1):
+        tmp_dict = defaultdict(list)
         for i in range(len(self.weights_vec[h-1])):
             for j in range(len(self.weights_vec[h-1][i])):
                 print("loc: ", h, i, j)
                 #print("delta:::",self.delta)
                 weight = self.weights_vec[h-1][i][j] + lr * self.delta['h_{}y_{}'.format(h, i)] * self.y_dict['h_{}y_{}'.format(h-2, j)]
-                self.update_weight_dict['h_{}w_{}'.format(h, i)].append(weight)
+                tmp_dict[i].append(weight)
+        self.update_weight_dict['h_{}'.format(h)].append(list(tmp_dict.values()))
                 
 
     def __calculate_total_net_input(self,inp , h):
