@@ -39,6 +39,7 @@ class Neuron():
             #print(self.update_weight_dict)
         print('\ndelta:', self.delta)
         self.update_weight_dict = reduce(lambda a, b: a + b, self.update_weight_dict.values())
+        self.update_weight_dict.reverse()
         
         print('\nback update_weight: ', self.update_weight_dict)
 
