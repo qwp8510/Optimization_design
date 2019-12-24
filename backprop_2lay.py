@@ -26,13 +26,12 @@ class Neuron():
             for_inp = list(self.__calculate_total_net_input(for_inp , h))
             
             self.y_dict['h_-1y_{}'.format(h)] = inputs[h]
-            print('forword y_dict: ', self.y_dict)
+        print('forword y_dict: ', self.y_dict)
         error = [0.5 * (y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2 for i in range(len(self.weights_vec[-1]))]
         print('error: ', error)
         self.backward(error)
 
     def backward(self, error):
-        
         for h in range(len(self.weights_vec), 0, -1):
             self.__node_delta(h, error)
             self.update_weights(h)
@@ -48,7 +47,6 @@ class Neuron():
         tmp_dict = defaultdict(list)
         for i in range(len(self.weights_vec[h-1])):
             for j in range(len(self.weights_vec[h-1][i])):
-                print("loc: ", h, i, j)
                 #print("delta:::",self.delta)
                 weight = self.weights_vec[h-1][i][j] + lr * self.delta['h_{}y_{}'.format(h, i)] * self.y_dict['h_{}y_{}'.format(h-2, j)]
                 tmp_dict[i].append(weight)
@@ -86,6 +84,42 @@ class Neuron():
                 self.delta['h_{}y_{}'.format(h,i)] = tmp_delta
 
 
+class NeuronLayer():
+    def __init__(self, weights_arr, bias_vec):
+    # print the structure of the current neuron layer
+        self.weights_vec = weights_vec
+        self.bias = bias    def inspect(self):
+        
+    def feed_forward(self, inputs):
+    # feed the node deltas of the current layer to the previous one
+        pass
+    def feed_backward(self, errors):
+    # errors = layer_deltas for hidden layers
+        pass
+    def update_weights(self, lr = 0.1):
+        pass
+
+class NeuronNetwork:
+    def __init__(self, weights_arrs, bias_arr):
+    # weights_arrs is a 3D array, and bias_arr is a 2D array
+        self.weights_vec = weights_vec
+        self.bias = bias
+        
+    def inspect(self):
+        pass
+
+    def feed_forward(self, inputs):
+        pass
+
+    def compute_loss(self, training_inputs, training_outputs):
+        # Uses online learning, ie updating the weights after each training epoch
+        pass
+
+    def train(self, training_inputs, training_outputs, lr = 0.1):
+        ## private functions
+        pass
+    def __update_weights(self, lr = 0.1):
+        pass
 
 if __name__ == '__main__':
     weights_arrs = [[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
