@@ -22,14 +22,14 @@ class Neuron():
 
     def forward(self, inputs):
         error = []
-        y_r = [0,1,1,0,1,0,0,1]  # by default temporily
+        y_r = [0.01,0.99]  # by default temporily
         error_total = 0
         inputs = np.array(inputs)
         for_inp = np.copy(inputs)
         for h in range(len(self.weights_vec)):
             for_inp = list(self.__calculate_total_net_input(for_inp , h))
             self.y_dict['h_-1y_{}'.format(h)] = np.average(inputs[h])
-        #print('forword y_dict: ', self.y_dict)
+        print('forword y_dict: ', self.y_dict)
         
         for i in range(len(self.weights_vec[-1])):
             tmp_error = 0.5 * (y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2
@@ -51,7 +51,7 @@ class Neuron():
         self.update_weight_dict.reverse()
         self.update_bias_dict.reverse()
         
-        #print('\nback update_weight:{}\nback update bias:{}'.format(self.update_weight_dict,self.update_bias_dict))
+        print('\nback update_weight:{}\nback update bias:{}'.format(self.update_weight_dict,self.update_bias_dict))
 
     def update_weights(self, h, lr = 1):
         tmp_w_dict = defaultdict(list)
@@ -208,20 +208,16 @@ class neural_predict():
 
 if __name__ == '__main__':
     weights_arrs = [
-                    [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
-                    [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
-                    [[2.1,2.2,2.3,2.4]]
+                    [[0.15,0.2],[0.25,0.3]],
+                    [[0.5,0.45],[0.5,0.55]]
                    ]
     bias_arr = [
-                [0.1,0.2,0.3],
-                [1.1,1.2,1.3,1.4],
-                [2.1,2.2]
+                [0.35, 0.35],[0.6, 0.6]
                ]
 
-    for i in range(1000000):
-        inp = [[0,0,0,0,1,1,1,1],
-              [0,0,1,1,0,0,1,1],
-              [0,1,0,1,0,1,0,1]]
+    for i in range(1):
+        inp = [[0.05],
+              [0.1]]
         # print("go:", weights_arrs, '\n', bias_arr)
         error_total, weights_arrs, bias_arr = Neuron(weights_arrs, bias_arr).forward(inp)
         if error_total < 0.0001:
@@ -230,15 +226,7 @@ if __name__ == '__main__':
             break
         
 
-    # w = [[[0.07532269941689959, 0.1753226994168994, 0.2753226994169001], [0.3785252397457107, 0.47852523974571065, 0.5785252397457145], 
-    # [0.6826936280011476, 0.7826936280011477, 0.8826936280011477]], 
-    # [[1.0686263921707897, 1.1623577665587808, 1.2577886911446885], [1.3829637957013339, 1.4795490610000994, 1.577058494958196], 
-    # [1.6907291434645886, 1.7888647657800358, 1.8875040426144583], [1.2638970753270302, 1.1566016239499417, 1.0512717374256924]], 
-    # [[-0.9343695548374201, -0.8836870163610003, -0.8063422547111397, -0.6550828927692521]]] 
-    # b = [[0.050645398833800724, 0.1570504794914231, 0.2653872560022938], [1.046746864241172, 1.1710460963018676, 1.2842227758486748, 1.3384396996645642], [-1.026888889270411]]
-
-
-    inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
-    neural_predict(weights_arrs, bias_arr, inputs).forward()
+    # inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
+    # neural_predict(weights_arrs, bias_arr, inputs).forward()
 
 
