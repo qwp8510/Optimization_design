@@ -43,7 +43,7 @@ class CGradDecent():
     def set_x0(self,x0):
         self.x0 = x0
 
-    def set_Maxlter(self,Maxlter):
+    def set_Maxlter(self,MaxIter):
         self.MaxIter = MaxIter
 
     def set_MinNorm(self,MinNorm):
@@ -64,7 +64,7 @@ class CGradDecent():
 
         for i in range(self.MaxIter):
             descent_result = list(_Diff.GetGrad(lr_rate,self.x0))
-            #print('descent_result',descent_result)
+            print('descent_result',descent_result[-1])
             d = list(map(lambda x: -x,descent_result))[:-1]
             #print('iter at:', i, self.x0, self.costfun(self.x0))
             if (descent_result[-1] < self.MinNorm):
@@ -72,7 +72,7 @@ class CGradDecent():
                 print('result at:',i,self.x0,f_value)
                 return self.x0  
             lr_rate = _LineSearch(self.costfun, x=self.x0, d=d, eps=0.001).Runsearch()
-            print('rate:',lr_rate)
+            #print('rate:',lr_rate)
             self.x0 = [self.x0[i] + lr_rate * d[i] for i in range(self.dim)]
 
         print('over iter:',i,self.x0,self.costfun(self.x0))

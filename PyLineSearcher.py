@@ -38,7 +38,7 @@ class CGSSearch():
         return self.__Phase_two()
 
     def __Phase_one(self,update=1.618):
-        step_size = [0.1]
+        step_size = [300]
         origin_size = [0]
         step_size *= len(self.x)
         origin_size *= len(self.x)
@@ -55,16 +55,14 @@ class CGSSearch():
             #最後收斂極限
             if i == 0:
                 if (minize_value_list[0] >= self.costfun(origin_size)):
-                    print('fss final 0 :',value_list[0])
                     return 0, value_list[0][0]
             elif i == 1:
                 if(minize_value_list[-1] >= minize_value_list[-2]):
-                    print('fss final 1 :',value_list[-2][0])
                     return 0, value_list[-2][0]
             else:
                 if (minize_value_list[-1] >= minize_value_list[-2] and minize_value_list[-3] >= minize_value_list[-2]):
-                    print('phase1 iter={}:'.format(i),value_list[-3][0], value_list[-1][0])
                     return value_list[-3][0], value_list[-1][0]
+                    
         print('over iter at phase1',value)
         return value_list[-3][0], value_list[-1][0]
 

@@ -66,7 +66,7 @@ class CForwardDiff():
                                                                     self.costfun(self.x)) / self.descent_value_cols['descent_value_{}'.format(i)]
             forword_result += self.forword_value_cols['forword_x_{}'.format(i)]**2
             yield self.forword_value_cols['forword_x_{}'.format(i)]
-        print('forword_result:',forword_result**0.5)
+        #print('forword_result:',forword_result**0.5)
         yield forword_result**0.5
  
         
