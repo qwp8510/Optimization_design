@@ -17,22 +17,27 @@ class Neuron():
         self.weights_vec = weights_vec
         self.bias = bias
         self.delta = {}
+        #self.delta = 0
+        self.y_r = [0,1,1,0,1,0,0,1]  # by default temporily
         self.update_weight_dict = defaultdict(list)
         self.update_bias_dict = defaultdict(list)
 
     def forward(self, inputs):
         error = []
-        y_r = [0.01,0.99]  # by default temporily
         error_total = 0
         inputs = np.array(inputs)
         for_inp = np.copy(inputs)
         for h in range(len(self.weights_vec)):
             for_inp = list(self.__calculate_total_net_input(for_inp , h))
             self.y_dict['h_-1y_{}'.format(h)] = np.average(inputs[h])
+        
+        #self.y_list = list(reduce(lambda x, y: x + y, self.y_dict.values()))
+        
         print('forword y_dict: ', self.y_dict)
         
         for i in range(len(self.weights_vec[-1])):
-            tmp_error = 0.5 * (y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2
+            tmp_error = 0.5 * (self.y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2
+            #self.delta += self.__node_delta(tmp_error)
             error.append(tmp_error)
             error_total += tmp_error
 
@@ -42,6 +47,7 @@ class Neuron():
 
     def backward(self, error):
         for h in range(len(self.weights_vec), 0, -1):
+            
             self.__node_delta(h, error)
             self.update_weights(h)
             #print(self.update_weight_dict)
@@ -53,17 +59,19 @@ class Neuron():
         
         print('\nback update_weight:{}\nback update bias:{}'.format(self.update_weight_dict,self.update_bias_dict))
 
-    def update_weights(self, h, lr = 1):
+    def update_weights(self, h, lr = 0.1):
         tmp_w_dict = defaultdict(list)
         tmp_b_list = []
         for i in range(len(self.weights_vec[h-1])):
+            #tmp_error = 0.5 * (self.y_r[i] - self.y_dict['h_{}y_{}'.format(h-1, i)])**2
+            #self.delta += self.__node_delta(tmp_error)
             for j in range(len(self.weights_vec[h-1][i])):
-                #print("delta:::",self.delta)
                 weight_element = self.weights_vec[h-1][i][j] + lr * self.delta['h_{}y_{}'.format(h, i)] * self.y_dict['h_{}y_{}'.format(h-2, j)]
                 tmp_w_dict[i].append(weight_element)
             bias_element = self.bias[h-1][i] + lr * self.delta['h_{}y_{}'.format(h, i)]
             tmp_b_list.append(bias_element)
 
+        print("delta:::",self.delta)
         self.update_weight_dict['h_{}'.format(h)].append(list(tmp_w_dict.values()))
         self.update_bias_dict['h_{}'.format(h)].append(tmp_b_list)
                 
@@ -75,7 +83,6 @@ class Neuron():
                 temp_nur += inp[j] * self.weights_vec[h][i][j]
             temp_nur += self.bias[h][i]
             self.y_dict['h_{}y_{}'.format(h,i)] = np.average(self.__sigmoid(temp_nur))
-            print(temp_nur)
             yield self.y_dict['h_{}y_{}'.format(h,i)]
 
     def __sigmoid(self, total_net_input):
@@ -84,6 +91,12 @@ class Neuron():
 
     def __node_delta(self, h, error):
         # Apply the node delta function
+        # print('y_list:',self.y_list[-1])
+        # y_o = self.y_list[-1]
+        # self.y_list = self.y_list[:-1]
+        # return -error * y_o * (1 - y_o)
+
+
         if (not self.delta):
             for i in range(len(self.weights_vec[-1])):
                 # print('first node_delta:', h, i)
@@ -208,25 +221,29 @@ class neural_predict():
 
 if __name__ == '__main__':
     weights_arrs = [
-                    [[0.15,0.2],[0.25,0.3]],
-                    [[0.5,0.45],[0.5,0.55]]
+                    [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
+                    [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
+                    [[2.1,2.2,2.3,2.4]]
                    ]
     bias_arr = [
-                [0.35, 0.35],[0.6, 0.6]
+                [0.1,0.2,0.3],
+                [1.1,1.2,1.3,1.4],
+                [2.1]
                ]
 
-    for i in range(1):
-        inp = [[0.05],
-              [0.1]]
+    for i in range(100000):
+        inp = [[0,0,0,0,1,1,1,1],
+              [0,0,1,1,0,0,1,1],
+              [0,1,0,1,0,1,0,1]]
         # print("go:", weights_arrs, '\n', bias_arr)
         error_total, weights_arrs, bias_arr = Neuron(weights_arrs, bias_arr).forward(inp)
         if error_total < 0.0001:
             print('-----------------\n--------------------\n---------------')
-            print('end\nweight:\n', weights_arrs,'\nbias:\n', bias_arr)
+            print('end\nweight:\n',i, weights_arrs,'\nbias:\n', bias_arr)
             break
         
 
-    # inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
-    # neural_predict(weights_arrs, bias_arr, inputs).forward()
+    inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
+    neural_predict(weights_arrs, bias_arr, inputs).forward()
 
 
