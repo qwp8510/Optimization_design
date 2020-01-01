@@ -12,6 +12,7 @@ class Neuron():
 
     inp_dict = {}
     y_dict = {}
+    node_list = []
     
     def __init__(self, weights_vec, bias):
         self.weights_vec = weights_vec
@@ -23,42 +24,30 @@ class Neuron():
         self.update_bias_dict = defaultdict(list)
 
     def forward(self, inputs):
-        error = []
-        error_total = 0
-        inputs = np.array(inputs)
-        for_inp = np.copy(inputs)
-        for h in range(len(self.weights_vec)):
-            for_inp = list(self.__calculate_total_net_input(for_inp , h))
-            self.y_dict['h_-1y_{}'.format(h)] = np.average(inputs[h])
-        
-        #self.y_list = list(reduce(lambda x, y: x + y, self.y_dict.values()))
-        
-        print('forword y_dict: ', self.y_dict)
-        
-        for i in range(len(self.weights_vec[-1])):
-            tmp_error = 0.5 * (self.y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2
-            #self.delta += self.__node_delta(tmp_error)
-            error.append(tmp_error)
-            error_total += tmp_error
-
-        print('error: ', error_total, error)
-        self.backward(error)
-        return error_total, self.update_weight_dict, self.update_bias_dict
+        node_value = self.__calculate_total_net_input
+        self.node_list.append(node_value)
+        return node_value
+                        
+        # for i in range(len(self.weights_vec[-1])):
+        #     tmp_error = 0.5 * (self.y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2
+        #     #self.delta += self.__node_delta(tmp_error)
+        #     error.append(tmp_error)
+        #     error_total += tmp_error
 
     def backward(self, error):
-        for h in range(len(self.weights_vec), 0, -1):
-            
-            self.__node_delta(h, error)
-            self.update_weights(h)
-            #print(self.update_weight_dict)
-            #print("delta:::",self.delta)
-        self.update_weight_dict = reduce(lambda a, b: a + b, self.update_weight_dict.values())
-        self.update_bias_dict = reduce(lambda a, b: a + b, self.update_bias_dict.values())
-        self.update_weight_dict.reverse()
-        self.update_bias_dict.reverse()
-        
-        print('\nback update_weight:{}\nback update bias:{}'.format(self.update_weight_dict,self.update_bias_dict))
+        return self.__node_delta(error)
 
+        # for h in range(len(self.weights_vec), 0, -1):
+            
+        #     self.__node_delta(h, error)
+        #     self.update_weights(h)
+        #     #print(self.update_weight_dict)
+        #     #print("delta:::",self.delta)
+        # self.update_weight_dict = reduce(lambda a, b: a + b, self.update_weight_dict.values())
+        # self.update_bias_dict = reduce(lambda a, b: a + b, self.update_bias_dict.values())
+        # self.update_weight_dict.reverse()
+        # self.update_bias_dict.reverse()
+        
     def update_weights(self, h, lr = 0.1):
         tmp_w_dict = defaultdict(list)
         tmp_b_list = []
@@ -75,48 +64,23 @@ class Neuron():
         self.update_weight_dict['h_{}'.format(h)].append(list(tmp_w_dict.values()))
         self.update_bias_dict['h_{}'.format(h)].append(tmp_b_list)
                 
-    def __calculate_total_net_input(self, inp, h):
-        for i in range(len(self.weights_vec[h])):
-            temp_nur = 0
-            for j in range(len(inp)):
-                #print('inp and weights:', inp[j], self.weights_vec[h][i][j])
-                temp_nur += inp[j] * self.weights_vec[h][i][j]
-            temp_nur += self.bias[h][i]
-            self.y_dict['h_{}y_{}'.format(h,i)] = np.average(self.__sigmoid(temp_nur))
-            yield self.y_dict['h_{}y_{}'.format(h,i)]
+    def __calculate_total_net_input(self):
+        node_value = 0
+        for i in range(self.weights_vec):
+            node_value = self.for_inp * self.weights_vec[i]
+        node_value += self.bias
+        return self.__sigmoid(node_value)
 
     def __sigmoid(self, total_net_input):
         # Apply the sigmoid activation function
         return 1/(1 + np.exp(-total_net_input))
 
-    def __node_delta(self, h, error):
+    def __node_delta(self, error):
         # Apply the node delta function
         # print('y_list:',self.y_list[-1])
-        # y_o = self.y_list[-1]
-        # self.y_list = self.y_list[:-1]
-        # return -error * y_o * (1 - y_o)
-
-
-        if (not self.delta):
-            for i in range(len(self.weights_vec[-1])):
-                # print('first node_delta:', h, i)
-                y_o = self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)]
-                self.delta['h_{}y_{}'.format(h, i)] =  (-error[i]) * y_o * (1 - y_o)
-                
-        else:
-            for i in range(len(self.weights_vec[h][0])):
-                tmp_delta = 0
-                for j in range(len(self.weights_vec[h])):
-                    # print(h,i,j)
-                    # print(self.weights_vec[h],self.weights_vec[h][j][i])
-                    tmp_delta += self.delta['h_{}y_{}'.format(h+1, j)] * self.weights_vec[h][j][i]
-                    #print('temp_delta:::::',tmp_delta)
-                y_o = self.y_dict['h_{}y_{}'.format(h-1, i)]
-                #print('y_o:',y_o)
-                #print('tmp_delta:',tmp_delta)
-                tmp_delta = tmp_delta * y_o * (1 - y_o)
-                self.delta['h_{}y_{}'.format(h,i)] = tmp_delta
-
+        y_o = self.node_list[-1]
+        del self.node_list[-1]
+        return -error * y_o * (1 - y_o)
 
 class NeuronLayer():
     def __init__(self, weights_arr, bias_vec):
@@ -130,10 +94,14 @@ class NeuronLayer():
     def feed_forward(self, inputs): 
         for i in range(len(self.weights_arr)):
             self.Neuron = Neuron(self.weights_arr[i], self.bias_vec[i])
-            self.feed_forward(inputs)
+            yield self.Neuron.forward(inputs)
 
     def feed_backward(self, errors):
         # feed the node deltas of the current layer to the previous one
+        for i in range(len(self.weights_arr)-1, -1, -1):
+            self.Neuron = Neuron(self.weights_arr[i], self.bias_vec[i])
+            node_delta = self.Neuron.backward(errors[i])
+
 
 
         # errors = layer_deltas for hidden layers
@@ -155,20 +123,24 @@ class NeuronNetwork():
             self.train(inputs, outputs)
 
     def feed_forward(self, inputs):
-        self.NeuronLayer.feed_forward(inputs)
-
+        return list(self.NeuronLayer.feed_forward(inputs))
 
     def compute_loss(self, training_inputs, training_outputs):
-        
-        pass
+        for inp in training_inputs:
+            yield (training_outputs - inp)**2  * 0.5 
 
     def train(self, training_inputs, training_outputs, lr = 0.1):
         # Uses online learning, ie updating the weights after each training epoch
+        
         for i in range(len(self.weights_arrs)):
             self.NeuronLayer = NeuronLayer(weights_arrs[i], bias_arr)
-            self.feed_forward(training_inputs)
+            training_inputs =  self.feed_forward(training_inputs)
 
-        self.__update_weights()
+        errors = list(self.compute_loss(training_inputs, training_outputs))
+
+        for j in range(len(self.weights_arrs) - 1, -1, -1):
+            self.NeuronLayer = NeuronLayer(weights_arrs[i], bias_arr)
+            self.NeuronLayer.feed_backward(errors)
 
     def __update_weights(self, lr = 0.1):
         # private functions
