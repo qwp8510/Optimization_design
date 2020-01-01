@@ -128,8 +128,8 @@ class NeuronLayer():
         pass
 
     def feed_forward(self, inputs): 
-        for i in range(len(self.bias_vec)):
-            self.Neuron = Neuron(self.weights_arr, self.bias_vec[i])
+        for i in range(len(self.weights_arr)):
+            self.Neuron = Neuron(self.weights_arr[i], self.bias_vec[i])
             self.feed_forward(inputs)
 
     def feed_backward(self, errors):
@@ -164,8 +164,8 @@ class NeuronNetwork():
 
     def train(self, training_inputs, training_outputs, lr = 0.1):
         # Uses online learning, ie updating the weights after each training epoch
-        for i in range(len(self.bias_arr)):
-            self.NeuronLayer = NeuronLayer(weights_arrs, bias_arr)
+        for i in range(len(self.weights_arrs)):
+            self.NeuronLayer = NeuronLayer(weights_arrs[i], bias_arr)
             self.feed_forward(training_inputs)
 
         self.__update_weights()
