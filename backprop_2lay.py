@@ -38,16 +38,17 @@ class Neuron():
         print(self.y_list)
         # self.y_list = list(reduce(lambda x, y: x + y, self.y_dict.values()))
         
-        
         for i in range(len(self.weights_vec[-1])):
             tmp_error = 0.5 * (self.y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])**2
+            final_error = np.linalg.norm(self.y_r[i] - self.y_dict['h_{}y_{}'.format(len(self.weights_vec)-1, i)])
+            print('final_error:', final_error)
             #self.delta += self.__node_delta(tmp_error)
             error.append(tmp_error)
             error_total += tmp_error
 
         print('error: ', error_total, error)
         self.backward(error)
-        return error_total, self.update_weight_dict, self.update_bias_dict
+        return final_error, self.update_weight_dict, self.update_bias_dict
 
     def backward(self, error):
         for h in range(len(self.weights_vec), 0, -1):
@@ -63,7 +64,7 @@ class Neuron():
         
         print('\nback update_weight:{}\nback update bias:{}'.format(self.update_weight_dict,self.update_bias_dict))
 
-    def update_weights(self, h, lr = 0.1):
+    def update_weights(self, h, lr = 1):
         tmp_w_dict = defaultdict(list)
         tmp_b_list = []
         for i in range(len(self.weights_vec[h-1])):
@@ -74,6 +75,8 @@ class Neuron():
                 tmp_w_dict[i].append(weight_element)
             bias_element = self.bias[h-1][i] + lr * self.delta
             tmp_b_list.append(bias_element)
+
+
 
         print("delta:::",self.delta)
         self.update_weight_dict['h_{}'.format(h)].append(list(tmp_w_dict.values()))
@@ -94,7 +97,7 @@ class Neuron():
         return 1/(1 + np.exp(-total_net_input))
 
     def __node_delta(self, error):
-        # Apply the node delta function
+        # Apply the node delta function`
         y_o = self.y_list[-1]
         self.y_list = self.y_list[:-1]
         return -error * y_o * (1 - y_o)
@@ -237,26 +240,26 @@ if __name__ == '__main__':
                 [2.1]
                ]
 
-    # for i in range(100000):
-    #     inp = [[0,0,0,0,1,1,1,1],
-    #           [0,0,1,1,0,0,1,1],
-    #           [0,1,0,1,0,1,0,1]]
-    #     # print("go:", weights_arrs, '\n', bias_arr)
-    #     error_total, weights_arrs, bias_arr = Neuron(weights_arrs, bias_arr).forward(inp)
-    #     if error_total < 0.0001:
-    #         print('-----------------\n--------------------\n---------------')
-    #         print('end\nweight:\n',i, weights_arrs,'\nbias:\n', bias_arr)
-    #         break
+    for i in range(1):
+        inp = [[0,0,0,0,1,1,1,1],
+               [0,0,1,1,0,0,1,1],
+               [0,1,0,1,0,1,0,1]]
+        # print("go:", weights_arrs, '\n', bias_arr)
+        error_total, weights_arrs, bias_arr = Neuron(weights_arrs, bias_arr).forward(inp)
+        if error_total < 0.0001:
+            print('-----------------\n--------------------\n---------------')
+            print('end\nweight:\n',i, weights_arrs,'\nbias:\n', bias_arr)
+            break
         
-    weights_arrs = [[[-12.714536620671021, -12.614536620671059, -12.51453662067104], 
-    [-12.800850491827571, -12.70085049182758, -12.600850491827565], [-12.939564036184631, -12.839564036184623, -12.739564036184632]], 
-    [[0.8999052203693169, 1.005504574460377, 1.0933132194140034], [1.1808841286400837, 1.2943489028309492, 1.386569315311284], 
-    [1.459223103460897, 1.582111641603777, 1.6796314041768237], [0.87706764420223, 0.796192113913878, 0.6764446747726564]], 
-    [[1.508919453306897, 1.922188524674242, 2.262905290032174, 2.3804314243581346]]]
+    # weights_arrs = [[[-12.714536620671021, -12.614536620671059, -12.51453662067104], 
+    # [-12.800850491827571, -12.70085049182758, -12.600850491827565], [-12.939564036184631, -12.839564036184623, -12.739564036184632]], 
+    # [[0.8999052203693169, 1.005504574460377, 1.0933132194140034], [1.1808841286400837, 1.2943489028309492, 1.386569315311284], 
+    # [1.459223103460897, 1.582111641603777, 1.6796314041768237], [0.87706764420223, 0.796192113913878, 0.6764446747726564]], 
+    # [[1.508919453306897, 1.922188524674242, 2.262905290032174, 2.3804314243581346]]]
 
-    bias_arr = [[-25.52907324134205, -26.20170098365505, -26.979128072369235], 
-                [-5.444420023328435, -6.46327495280288, -23.20000054920603, -23.95945247114183], 
-                [-3.1282112419645176]]
+    # bias_arr = [[-25.52907324134205, -26.20170098365505, -26.979128072369235], 
+    #             [-5.444420023328435, -6.46327495280288, -23.20000054920603, -23.95945247114183], 
+    #             [-3.1282112419645176]]
 
 
     inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
