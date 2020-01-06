@@ -43,8 +43,8 @@ class Neuron():
         node_value = 0
         for i in range(len(self.weights_vec)):
             node_value += self.inputs[i] * self.weights_vec[i]
+            print('node count:',self.inputs[i] , self.weights_vec[i], self.bias)
         node_value += self.bias
-        print('node_value:',node_value)
         return self.__sigmoid(node_value)
 
     def __sigmoid(self, total_net_input):
@@ -99,11 +99,15 @@ class NeuronNetwork(NeuronLayer):
         self.error = 0
 
     def inspect(self):
-        inputs = [[0,0,0,0,1,1,1,1],
-                  [0,0,1,1,0,0,1,1],
-                  [0,1,0,1,0,1,0,1]]
-        inputs = np.array(inputs).T
-        outputs = [0,1,1,0,1,0,0,1]
+        # inputs = [[0,0,0,0,1,1,1,1],
+        #           [0,0,1,1,0,0,1,1],
+        #           [0,1,0,1,0,1,0,1]]
+        # outputs = [0,1,1,0,1,0,0,1]
+
+        inputs = np.array([[0.05,0.1]])
+        outputs = [0.01,0.99]
+        #inputs = np.array(inputs).T
+        
         outputs = np.array(outputs)
         self.total_node_delta_arr = []
         for arr in self.bias_arr:
@@ -133,11 +137,12 @@ class NeuronNetwork(NeuronLayer):
             training_inputs =  self.feed_forward(training_inputs)
             print('input',training_inputs)
             neuron_arr.append(training_inputs)
-
+        print('neuron_arr:',neuron_arr)
         node_delta_vec = self.compute_loss(training_inputs, training_outputs)
         self.error = node_delta_vec[-1]
         print('error:',self.error)
         node_delta_arr.append(node_delta_vec)
+        self.node_delta = 0
         for j in range(len(self.weights_arrs) - 1, -1, -1):
             self.Neuron_vec = neuron_arr[j]
             node_delta_vec = list(self.feed_backward(node_delta_vec[-1]))
@@ -221,17 +226,23 @@ class NeuralPredict(NeuronLayer):
     #     return 1/(1 + np.exp(-total_net_input))
 
 if __name__ == '__main__':
+    # weights_arrs = [
+    #                 [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
+    #                 [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
+    #                 [[2.1,2.2,2.3,2.4]]
+    #                ]
+    # bias_arr = [
+    #             [0.1,0.2,0.3],
+    #             [1.1,1.2,1.3,1.4],
+    #             [2.1]
+    #            ]
     weights_arrs = [
-                    [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
-                    [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
-                    [[2.1,2.2,2.3,2.4]]
-                   ]
-    bias_arr = [
-                [0.1,0.2,0.3],
-                [1.1,1.2,1.3,1.4],
-                [2.1]
-               ]
-    for i in range(1):
+                    [[0.15,0.2],[0.25,0.3]],
+                    [[0.4,0.45],[0.5,0.55]]
+                    ]
+    bias_arr = [[0.35,0.35],[0.6,0.6]]
+
+    for i in range(5000):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
         print(i, 'new weights_arrs:\n', weights_arrs, '\nbias_arr:\n', bias_arr)
         if (error < 0.0001):
