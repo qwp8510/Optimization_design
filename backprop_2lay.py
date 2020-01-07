@@ -21,10 +21,12 @@ class Neuron():
         node_value = self.__calculate_total_net_input()
         return node_value
 
-    def backward(self, error):
-        node_delta = self.__node_delta(error)
-        print('delta:',node_delta)
-        return node_delta
+    def backward(self, errors):
+        node_delta = 0
+        for error in errors:
+            node_delta += self.__node_delta(error)
+            #print('delta:',node_delta)
+            return node_delta
         
     def update_weights(self, lr = 0.5):
         update_weight_vec = []
@@ -47,6 +49,7 @@ class Neuron():
 
     def __node_delta(self, error):
         # Apply the node delta function
+        #print(error, self.neuron_value)
         return -error * self.neuron_value * (1 - self.neuron_value)
 
 class NeuronLayer(Neuron):
@@ -71,7 +74,7 @@ class NeuronLayer(Neuron):
         # errors = layer_deltas for hidden layers
         for i in range(len(self.Neuron_vec)-1, -1, -1):
             self.neuron_value = self.Neuron_vec[i]
-            self.node_delta += self.backward(errors[i])
+            self.node_delta += self.backward(errors)
             yield self.node_delta
        
     def update_weights(self, lr = 0.1):
@@ -91,6 +94,7 @@ class NeuronNetwork(NeuronLayer):
         self.weights_arrs = weights_arrs
         self.bias_arr = bias_arr
         self.error = 0
+        self.error2 = 0
 
     def inspect(self):
         inputs = [[0,0,0,0,1,1,1,1],
@@ -107,15 +111,19 @@ class NeuronNetwork(NeuronLayer):
         for i in range(len(inputs)):
             self.train(inputs[i], outputs[i])
             #print('error:',self.error)
+        print('error_euro: ',self.error2)
         return self.weights_arrs, self.bias_arr,self.error
 
     def feed_forward(self, inputs):
         return list(super(NeuronNetwork,self).feed_forward(inputs))
 
     def compute_loss(self, training_inputs, training_outputs):
-        return [((training_outputs - training_inputs[-1])**2)**0.5] 
+        return [((training_outputs - training_inputs[-1])**2) * 0.5] 
 
-    def train(self, training_inputs, training_outputs, lr = 10):
+    def compute_euro_loss(self, training_inputs, training_outputs):
+        return ((training_inputs[-1]**2 + training_outputs**2)**0.5)
+
+    def train(self, training_inputs, training_outputs, lr = 100):
         # Uses online learning, ie updating the weights after each training epoch
         node_delta_arr = []
         neuron_arr = []
@@ -124,10 +132,11 @@ class NeuronNetwork(NeuronLayer):
             self.weights_arr, self.bias_vec = self.weights_arrs[i], self.bias_arr[i]
             training_inputs =  self.feed_forward(training_inputs)
             neuron_arr.append(training_inputs)
-        print('neuron_arr:',neuron_arr)
+        #print('neuron_arr:',neuron_arr)
         node_delta_vec = self.compute_loss(training_inputs, training_outputs)
         self.error += node_delta_vec[-1]
-        
+        self.error2 += self.compute_euro_loss(training_inputs, training_outputs)
+
         self.node_delta = 0
         for j in range(len(self.weights_arrs) - 1, -1, -1):
             self.Neuron_vec = neuron_arr[j]
@@ -135,7 +144,7 @@ class NeuronNetwork(NeuronLayer):
             node_delta_arr.append(node_delta_vec)
 
         node_delta_arr.reverse()
-        print('node_delta_arr', node_delta_arr)
+        #print('node_delta_arr', node_delta_arr)
         for k in range(len(self.total_node_delta_arr)):
             self.total_node_delta_arr[k] += np.array(node_delta_arr[k])
 
@@ -226,12 +235,13 @@ if __name__ == '__main__':
     #                 [[0.23,0.31,0.51]]]
     # bias_arr = [[0.1,0.2,0.3],[0.5]]
 
-    for i in range(1):
+    for i in range(400000):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
-        print(error)
-        print(i, 'new weights_arrs:\n', weights_arrs, '\nbias_arr:\n', bias_arr)
+        print('error: ',i,error)
+        
         if (error < 0.0001):
+            print(i, 'new weights_arrs:\n', weights_arrs, '\nbias_arr:\n', bias_arr)
             break
 
-    # inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
-    # NeuralPredict(weights_arrs, bias_arr).inspect(inputs)
+    inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
+    NeuralPredict(weights_arrs, bias_arr).inspect(inputs)

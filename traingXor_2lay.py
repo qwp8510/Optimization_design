@@ -15,7 +15,9 @@ def neural_learning(x):
     x_1, x_2, y_d = training[0], training[1], training[2]
     z_1, z_2 = _activation(w11*x_1 + w12*x_2 + b1), _activation(w21*x_1 + w22*x_2 + b2)
     err = y_d - _activation(w31*z_1 + w32*z_2 + b3)
+    print(err)
     err = np.linalg.norm(err)
+    print(err)
     return err
 
 def neural_predict(x,in1,in2):
@@ -30,16 +32,16 @@ def neural_predict(x,in1,in2):
 if __name__ == '__main__':
     st = time.time()
     x0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    xpot = CGradDecent(neural_learning, x0, Gradient='Central', LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 300000).RunOptimization()
+    # xpot = CGradDecent(neural_learning, x0, Gradient='Central', LineSearch = 'GsS', MinNorm = 0.001, MaxIter = 300000).RunOptimization()
 #     xpot = [6.2763870796984005, 6.276624154295818, -9.586595138099005, 8.009982570820826, 8.01090375646171, 
 # -3.7173554243791616, -16.022370279421505, 15.428295873785036, -7.418001687879613]
     print(x0)
-    print(xpot)
+    # print(xpot)
     neural_learning(x0)
-    neural_learning(xpot)
-    neural_predict(x0,[0,0,1,1],[0,1,0,1])
-    neural_predict(xpot,[0,0,1,1],[0,1,0,1])
-    print('time:',time.time()-st)
+    # neural_learning(xpot)
+    # neural_predict(x0,[0,0,1,1],[0,1,0,1])
+    # neural_predict(xpot,[0,0,1,1],[0,1,0,1])
+    # print('time:',time.time()-st)
 
 """
 
