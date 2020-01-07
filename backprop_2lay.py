@@ -123,7 +123,7 @@ class NeuronNetwork(NeuronLayer):
     def compute_euro_loss(self, training_inputs, training_outputs):
         return ((training_inputs[-1]**2 + training_outputs**2)**0.5)
 
-    def train(self, training_inputs, training_outputs, lr = 100):
+    def train(self, training_inputs, training_outputs, lr = 10):
         # Uses online learning, ie updating the weights after each training epoch
         node_delta_arr = []
         neuron_arr = []
@@ -221,19 +221,19 @@ class NeuralPredict(NeuronLayer):
     #     return 1/(1 + np.exp(-total_net_input))
 
 if __name__ == '__main__':
-    weights_arrs = [
-                    [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
-                    [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
-                    [[2.1,2.2,2.3,2.4]]
-                   ]
-    bias_arr = [
-                [0.1,0.2,0.3],
-                [1.1,1.2,1.3,1.4],
-                [2.1]
-               ]
-    # weights_arrs = [[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
-    #                 [[0.23,0.31,0.51]]]
-    # bias_arr = [[0.1,0.2,0.3],[0.5]]
+    # weights_arrs = [
+    #                 [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
+    #                 [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
+    #                 [[2.1,2.2,2.3,2.4]]
+    #                ]
+    # bias_arr = [
+    #             [0.1,0.2,0.3],
+    #             [1.1,1.2,1.3,1.4],
+    #             [2.1]
+    #            ]
+    weights_arrs = [[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
+                    [[0.23,0.31,0.51]]]
+    bias_arr = [[0.1,0.2,0.3],[0.5]]
 
     for i in range(400000):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
