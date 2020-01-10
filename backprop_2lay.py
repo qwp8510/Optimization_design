@@ -98,25 +98,29 @@ class NeuronNetwork(NeuronLayer):
         self.bias_arr = bias_arr
         self.error = 0
 
-    def inspect(self):
+    def inspect(self,inputs,outputs):
         # inputs = [[0,0,0,0,1,1,1,1],
         #           [0,0,1,1,0,0,1,1],
         #           [0,1,0,1,0,1,0,1]]
         # outputs = [0,1,1,0,1,0,0,1]
 
-        inputs = np.array([[0.05,0.1]])
-        outputs = [0.01,0.99]
+        # inputs = np.array([[0.05,0.1]])
+        inputs = np.array([inputs])
+
+        # outputs = [0.689,0.5]
         #inputs = np.array(inputs).T
         
-        outputs = np.array(outputs)
+        #outputs = np.array(outputs)
         self.total_node_delta_arr = []
         for arr in self.bias_arr:
             self.total_node_delta_arr.append(np.array(arr) * 0)
 
-        for i in range(len(inputs)):
-            self.train(inputs[i], outputs[i])
+        for i in range(15000):
+            self.train(inputs, outputs)
+            if (self.error < 0.0001):
+                return self.weights_arrs, self.bias_arr
             
-        return self.weights_arrs, self.bias_arr,self.error
+        # return self.weights_arrs, self.bias_arr,self.error
 
     def feed_forward(self, inputs):
         return list(super(NeuronNetwork,self).feed_forward(inputs))
@@ -172,7 +176,7 @@ class NeuralPredict(NeuronLayer):
         self.result_vec = []
 
     def inspect(self,inputs):
-        inputs = np.array(inputs).T
+        inputs = np.array(inputs)
         for inp in inputs:
             self.train(inp)
 
@@ -188,6 +192,7 @@ class NeuralPredict(NeuronLayer):
             training_inputs =  list(self.feed_forward(training_inputs))
 
         self.result_vec.append(training_inputs[-1])
+        return training_inputs
 
     # def forward(self):
     #     inputs = np.array(self.inputs)
@@ -236,21 +241,31 @@ if __name__ == '__main__':
     #             [1.1,1.2,1.3,1.4],
     #             [2.1]
     #            ]
-    weights_arrs = [
-                    [[0.15,0.2],[0.25,0.3]],
-                    [[0.4,0.45],[0.5,0.55]]
-                    ]
-    bias_arr = [[0.35,0.35],[0.6,0.6]]
-
-    for i in range(5000):
-        weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
-        print(i, 'new weights_arrs:\n', weights_arrs, '\nbias_arr:\n', bias_arr)
-        if (error < 0.0001):
-            break
+    # weights_arrs = [
+    #                 [[0.15,0.2],[0.25,0.3]],
+    #                 [[0.4,0.45],[0.5,0.55]]
+    #                 ]
+    # bias_arr = [[0.35,0.35],[0.6,0.6]]
+    weights_arrs = [[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
+                    [[0.23,0.31,0.51]]]
+    bias_arr = [[0.1,0.2,0.3],[0.5]]
+    inputs = np.array([[1,1,1],[0.1,2,3]])
+    outputs = [0.689,0.5]
+    output_w, output_b = [], []
+    result = []
+    for i in range(len(inputs)):
+        weights_arrs, bias_arr = NeuronNetwork(weights_arrs, bias_arr).inspect(inputs[i], outputs[i])
+        output_w.append(weights_arrs)
+        output_b.append(bias_arr)
+        # weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
+        # print(i, 'new weights_arrs:\n', weights_arrs, '\nbias_arr:\n', bias_arr)
+        # if (error < 0.000001):
+        #     break
     
-        
-
-    #inputs = [[0,0,1,1],[0,1,0,1],[1,0,1,0]]
-    #NeuralPredict(weights_arrs, bias_arr).inspect(inputs)
+    for j in range(len(output_w)):
+        inputs = [[1,1,1],[1,2,3]]
+        oup = NeuralPredict(weights_arrs[j], bias_arr[j]).inspect(inputs[j])
+        result.append(oup)
+    print('result:',result)
 
 
