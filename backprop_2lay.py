@@ -14,6 +14,7 @@ class Neuron(MatrixHandler):
         self.bias = bias
         self.neuron_value = 0
         self.node_delta_value = 0
+        self.neuron_vec = []
 
     def forward(self, inputs):
         self.inputs = inputs
@@ -22,18 +23,18 @@ class Neuron(MatrixHandler):
 
     def backward(self, error):
         nodeDelta = 0
-        node = self.__node_delta(error)
-        for weight in self.weights_vec:
+        for i, weight in enumerate(self.weights_vec):
+            self.neuron_value = self.neuron_vec[i]
+            node = self.__node_delta(error)
             nodeDelta = node * weight
             yield nodeDelta
 
     def update_weights(self, lr = 0.1):
         update_weight_vec = []
         lr_delta = lr * self.node_delta_value
-        for i in range(len(self.weights_vec)-1, -1, -1):
+        for i in range(len(self.weights_vec)):
             update_weight_vec.append(self.weights_vec[i] + lr_delta)
-        yield update_weight_vec
-        yield self.bias + lr_delta
+        return update_weight_vec, self.bias + lr_delta
                 
     def __calculate_total_net_input(self):
         node_value = 0
@@ -54,7 +55,6 @@ class NeuronLayer(Neuron):
     def __init__(self, weights_arr, bias_vec):
         self.weights_arr = weights_arr
         self.bias_vec = bias_vec
-        self.Neuron_vec = []
         self.node_delta_vec = []
 
     def feed_forward(self, inputs): 
@@ -65,9 +65,9 @@ class NeuronLayer(Neuron):
     def feed_backward(self, errors):
         # feed the node deltas of the current layer to the previous one
         nodeDelta = []
-        for i in range(len(self.Neuron_vec)-1, -1, -1):
+        for i in range(len(errors)-1, -1, -1):
             self.weights_vec = self.weights_arr[i]
-            self.neuron_value = self.Neuron_vec[i]
+            # self.neuron_value = self.neuron_vec[i]
             if not nodeDelta:
                 nodeDelta = list(self.backward(errors[i]))
             else:
@@ -78,11 +78,10 @@ class NeuronLayer(Neuron):
         updating_weight_arr, updating_bias_vec = [] , []
         for i in range(len(self.weights_arr)):
             self.weights_vec, self.bias, self.node_delta_value = self.weights_arr[i], self.bias_vec[i], self.node_delta_vec[i]
-            _updating = super(NeuronLayer,self).update_weights(lr)
-            updating_weight_arr.append(next(_updating))
-            updating_bias_vec.append(next(_updating))
-        yield updating_weight_arr
-        yield updating_bias_vec
+            u_weights_vec, u_bias = super(NeuronLayer,self).update_weights(lr)
+            updating_weight_arr.append(u_weights_vec)
+            updating_bias_vec.append(u_bias)
+        return updating_weight_arr, updating_bias_vec
 
 class NeuronNetwork(NeuronLayer):
     def __init__(self, weights_arrs, bias_arr):
@@ -107,7 +106,7 @@ class NeuronNetwork(NeuronLayer):
         for i in range(len(inputs)):
             self.train(inputs[i], outputs[i])
         self.__update_weights()
-        print('error_euro: ',self.error2)
+        # print('error_euro: ',self.error2)
         return self.weights_arrs, self.bias_arr, self.error
 
     def feed_forward(self, inputs):
@@ -130,12 +129,13 @@ class NeuronNetwork(NeuronLayer):
             neuron_arr.append(training_inputs)
         node_delta_vec = self.compute_loss(training_inputs, training_outputs)
         self.error += node_delta_vec[-1]
+        # print(node_delta_vec[-1])
         self.error2 += self.compute_euro_loss(training_inputs, training_outputs)
         self.node_delta = 0
         node_delta_vec = [node_delta_vec]
         for j, k in zip(range(len(self.weights_arrs) - 1, 0, -1), range(len(self.weights_arrs) - 1)):
             self.weights_arr = self.weights_arrs[j]
-            self.Neuron_vec = neuron_arr[j]
+            self.neuron_vec = neuron_arr[j-1]
             node_delta_vec += list(self.feed_backward(node_delta_vec[k]))
         node_delta_vec.reverse()
         self.total_node_delta_arr.append(node_delta_vec)
@@ -149,10 +149,10 @@ class NeuronNetwork(NeuronLayer):
                 self.sum_node_delta_arr = list(self.twoDimOperation(self.sum_node_delta_arr, nodeDeltaArr, '+'))
         for i in range(len(self.weights_arrs)):
             self.weights_arr, self.bias_vec, self.node_delta_vec = self.weights_arrs[i], self.bias_arr[i], self.sum_node_delta_arr[i]
-            _updated = self.update_weights(lr)
-            updating_weight_arrs.append(next(_updated))
-            updating_bias_arr.append(next(_updated))
-        print(updating_weight_arrs)
+            u_weights_arr, u_bias_vec = self.update_weights(lr)
+            updating_weight_arrs.append(u_weights_arr)
+            updating_bias_arr.append(u_bias_vec)
+        # print(updating_weight_arrs)
         self.weights_arrs = updating_weight_arrs
         self.bias_arr = updating_bias_arr
     
@@ -231,7 +231,7 @@ if __name__ == '__main__':
     #                 [[0.23,0.31,0.51]]]
     # bias_arr = [[0.1,0.2,0.3],[0.5]]
 
-    for i in range(4):
+    for i in range(1000):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
         print('error: ', i, error)
         
