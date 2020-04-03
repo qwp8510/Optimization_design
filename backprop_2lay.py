@@ -27,7 +27,7 @@ class Neuron(MatrixHandler):
             nodeDelta = node * weight
             yield nodeDelta
 
-    def update_weights(self, lr = 0.5):
+    def update_weights(self, lr = 0.1):
         update_weight_vec = []
         lr_delta = lr * self.node_delta_value
         for i in range(len(self.weights_vec)-1, -1, -1):
@@ -108,7 +108,7 @@ class NeuronNetwork(NeuronLayer):
             self.train(inputs[i], outputs[i])
         self.__update_weights()
         print('error_euro: ',self.error2)
-        return self.weights_arrs, self.bias_arr,self.error
+        return self.weights_arrs, self.bias_arr, self.error
 
     def feed_forward(self, inputs):
         return list(super(NeuronNetwork, self).feed_forward(inputs))
@@ -133,12 +133,10 @@ class NeuronNetwork(NeuronLayer):
         self.error2 += self.compute_euro_loss(training_inputs, training_outputs)
         self.node_delta = 0
         node_delta_vec = [node_delta_vec]
-        for j, k in zip(range(len(self.weights_arrs) - 1, -1, -1), range(len(self.weights_arrs))):
+        for j, k in zip(range(len(self.weights_arrs) - 1, 0, -1), range(len(self.weights_arrs) - 1)):
             self.weights_arr = self.weights_arrs[j]
             self.Neuron_vec = neuron_arr[j]
-            print('node_delta_vec:', j, k, node_delta_vec)
             node_delta_vec += list(self.feed_backward(node_delta_vec[k]))
-            # node_delta_arr.append(node_delta_vec)
         node_delta_vec.reverse()
         self.total_node_delta_arr.append(node_delta_vec)
 
@@ -149,14 +147,14 @@ class NeuronNetwork(NeuronLayer):
                 self.sum_node_delta_arr = nodeDeltaArr
             else:
                 self.sum_node_delta_arr = list(self.twoDimOperation(self.sum_node_delta_arr, nodeDeltaArr, '+'))
-        print(self.sum_node_delta_arr)
         for i in range(len(self.weights_arrs)):
             self.weights_arr, self.bias_vec, self.node_delta_vec = self.weights_arrs[i], self.bias_arr[i], self.sum_node_delta_arr[i]
             _updated = self.update_weights(lr)
             updating_weight_arrs.append(next(_updated))
             updating_bias_arr.append(next(_updated))
-        self.weights_arrs = list(self.threeDimOperation(self.weights_arrs, updating_weight_arrs, '-'))
-        self.bias_arr = list(self.twoDimOperation(self.bias_arr, updating_bias_arr, '-'))
+        print(updating_weight_arrs)
+        self.weights_arrs = updating_weight_arrs
+        self.bias_arr = updating_bias_arr
     
 class NeuralPredict(NeuronLayer):
     def __init__(self, weights_arrs, bias_arr):
@@ -233,7 +231,7 @@ if __name__ == '__main__':
     #                 [[0.23,0.31,0.51]]]
     # bias_arr = [[0.1,0.2,0.3],[0.5]]
 
-    for i in range(1):
+    for i in range(4):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
         print('error: ', i, error)
         
