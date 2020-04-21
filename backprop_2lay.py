@@ -102,7 +102,7 @@ class NeuronNetwork(NeuronLayer):
                   [1, 0, 1],
                   [1, 1, 0],
                   [1, 1, 1]]
-        outputs = [0,1,1,0,1,0,0,1]
+        outputs = [0, 1, 1, 0, 1, 0, 0, 1]
 
         # inputs = np.array(inputs).T    
         # outputs = np.array(outputs)
@@ -152,7 +152,6 @@ class NeuronNetwork(NeuronLayer):
             u_weights_arr, u_bias_vec = self.update_weights(lr)
             updating_weight_arrs.append(u_weights_arr)
             updating_bias_arr.append(u_bias_vec)
-        # print(updating_weight_arrs)
         if not self.total_weights_arrs:
             self.total_weights_arrs = updating_weight_arrs
         else:
@@ -161,7 +160,6 @@ class NeuronNetwork(NeuronLayer):
             self.total_bias_arr = updating_bias_arr
         else:
             self.total_bias_arr = list(self.twoDimOperation(self.total_bias_arr, updating_bias_arr, '+'))
-        print('weight: ', updating_weight_arrs)
 
 class NeuralPredict(NeuronLayer):
     def __init__(self, weights_arrs, bias_arr):
@@ -236,7 +234,7 @@ if __name__ == '__main__':
     #                 [[0.23,0.31,0.51]]]
     # bias_arr = [[0.1,0.2,0.3],[0.5]]
 
-    for i in range(1000):
+    for i in range(1):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
         print('error: ', i, error)
         
