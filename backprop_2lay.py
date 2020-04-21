@@ -132,7 +132,6 @@ class NeuronNetwork(NeuronLayer):
             neuron_arr.append(inps)
         node_delta_vec = self.compute_loss(inps, training_outputs)
         self.error += node_delta_vec[-1]
-        # print(self.neuron_arr, node_delta_vec[-1])
         # self.error2 += self.compute_euro_loss(training_inputs, training_outputs)
         self.node_delta = 0
         node_delta_vec = [node_delta_vec]
