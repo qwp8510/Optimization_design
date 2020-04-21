@@ -1,6 +1,7 @@
 import numpy as np
 from collections import defaultdict
-from functools import reduce
+from random import uniform
+
 from utils import MatrixHandler
 
 class Neuron(MatrixHandler):
@@ -33,7 +34,7 @@ class Neuron(MatrixHandler):
         update_weight_vec = []
         lr_delta = lr * self.node_delta_value
         for i in range(len(self.weights_vec)):
-            print(self.weights_vec[i], self.neuron_value, self.neuron_value[i])
+            # print(self.weights_vec[i], self.neuron_value, self.neuron_value[i])
             update_weight_vec.append(self.weights_vec[i] + lr_delta * self.neuron_value[i])
         return update_weight_vec, self.bias + lr_delta
                 
@@ -125,7 +126,7 @@ class NeuronNetwork(NeuronLayer):
     def compute_euro_loss(self, training_inputs, training_outputs):
         return [((training_inputs[-1]**2 + training_outputs**2)**0.5)]
 
-    def train(self, training_inputs, training_outputs, lr = 10):
+    def train(self, training_inputs, training_outputs, lr = 0.1):
         # Uses online learning, ie updating the weights after each training epoch
         inps = training_inputs
         neuron_arr = []
@@ -134,9 +135,8 @@ class NeuronNetwork(NeuronLayer):
             inps =  self.feed_forward(inps)
             neuron_arr.append(inps)
         node_delta_vec = self.compute_loss(inps, training_outputs)
+        # node_delta_vec = self.compute_euro_loss(training_inputs, training_outputs)
         self.error += node_delta_vec[-1]
-        # print(self.neuron_arr, node_delta_vec[-1])
-        # self.error2 += self.compute_euro_loss(training_inputs, training_outputs)
         self.node_delta = 0
         node_delta_vec = [node_delta_vec]
         for j, k in zip(range(len(self.weights_arrs) - 1, 0, -1), range(len(self.weights_arrs) - 1)):
@@ -178,8 +178,8 @@ class NeuralPredict(NeuronLayer):
 
     def inspect(self,inputs):
         inputs = np.array(inputs).T
-        for inp in inputs:
-            self.train(inp)
+        # for inp in inputs:
+        #     self.train(inp)
 
     def compute_loss(self, training_inputs, training_outputs):
         return [(training_outputs - training_inputs[-1])**2  * 0.5] 
@@ -228,22 +228,39 @@ class NeuralPredict(NeuronLayer):
     #     # Apply the sigmoid activation function
     #     return 1/(1 + np.exp(-total_net_input))
 
+def make_coefficient(inpNum, layers):
+    def gen_value(num):
+        for _ in range(num):
+            yield uniform(-3, 3)
+    def make_w(num, layer):
+        for i in range(layer):
+            yield list(gen_value(num))
+    def make_b(num):
+        yield from gen_value(num)
+
+    for layer in layers:    
+        yield list(make_w(inpNum, layer)), list(make_b(layer))
+        inpNum = layer
+
 if __name__ == '__main__':
-    weights_arrs = [
-                    [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
-                    [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
-                    [[2.1,2.2,2.3,2.4]]
-                   ]
-    bias_arr = [
-                [0.1,0.2,0.3],
-                [1.1,1.2,1.3,1.4],
-                [2.1]
-               ]
+    inputNum = 3
+    hiddenLayers = [3, 4, 1]
+    weights_arrs, bias_arr = zip(*make_coefficient(inputNum, hiddenLayers))
+    # weights_arrs = [
+    #                 [[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
+    #                 [[1.1,1.2,1.3],[1.4,1.5,1.6],[1.7,1.8,1.9],[1.3,1.2,1.1]],
+    #                 [[2.1,2.2,2.3,2.4]]
+    #                ]
+    # bias_arr = [
+    #             [0.1,0.2,0.3],
+    #             [1.1,1.2,1.3,1.4],
+    #             [2.1]
+            #    ]
     # weights_arrs = [[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]],
     #                 [[0.23,0.31,0.51]]]
     # bias_arr = [[0.1,0.2,0.3],[0.5]]
 
-    for i in range(1):
+    for i in range(1000):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
         print('error: ', i, error)
         
