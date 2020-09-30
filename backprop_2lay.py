@@ -35,6 +35,7 @@ class Neuron(MatrixHandler):
         lr_delta = lr * self.node_delta_value
         for i in range(len(self.weights_vec)):
             # print(self.weights_vec[i], self.neuron_value, self.neuron_value[i])
+            print(i,lr_delta ,self.neuron_value[i])
             update_weight_vec.append(self.weights_vec[i] + lr_delta * self.neuron_value[i])
         return update_weight_vec, self.bias + lr_delta
                 
@@ -106,8 +107,6 @@ class NeuronNetwork(NeuronLayer):
                   [1, 1, 1]]
         outputs = [0,1,1,0,1,0,0,1]
 
-        # inputs = np.array(inputs).T    
-        # outputs = np.array(outputs)
         self.total_node_delta_arr = []
         self.total_neuron_arr = []
 
@@ -170,71 +169,16 @@ class NeuronNetwork(NeuronLayer):
         self.weights_arrs = updating_weight_arrs
         self.bias_arr = updating_bias_arr
     
-class NeuralPredict(NeuronLayer):
-    def __init__(self, weights_arrs, bias_arr):
-        self.weights_arrs = weights_arrs
-        self.bias_arr = bias_arr
-        self.result_vec = []
-
-    def inspect(self,inputs):
-        inputs = np.array(inputs).T
-        # for inp in inputs:
-        #     self.train(inp)
-
-    def compute_loss(self, training_inputs, training_outputs):
-        return [(training_outputs - training_inputs[-1])**2  * 0.5] 
-
-    def train(self, training_inputs):
-        # Uses online learning, ie updating the weights after each training epoch
-        for i in range(len(self.weights_arrs)):
-            self.weights_arr, self.bias_vec = self.weights_arrs[i], self.bias_arr[i]
-            training_inputs =  list(self.feed_forward(training_inputs))
-
-        self.result_vec.append(training_inputs[-1])
-
-    # def forward(self):
-    #     inputs = np.array(self.inputs)
-    #     for_inp = np.copy(inputs)
-    #     for h in range(len(self.weights_arrs)-1):
-    #         for_inp = list(self.__calculate_total_net_input(for_inp, h))
-    #         # self.y_dict['h_-1y_{}'.format(h)] = inputs[h]
-    #     print('forword y_dict: ', self.y_dict)
-
-    #     self.__calculate_output()
-
-    # def __calculate_total_net_input(self, inp, h):
-    #     for i in range(len(self.weights_arrs[h])):
-    #         temp_nur = 0
-    #         for j in range(len(inp)):
-    #             #print(inp)
-    #             temp_nur += inp[j] * self.weights_arrs[h][i][j]
-    #         temp_nur += self.bias[h][i]
-    #         self.y_dict['h_{}y_{}'.format(h,i)] = self.__sigmoid(temp_nur)
-    #         yield self.y_dict['h_{}y_{}'.format(h,i)]
-
-    # def __calculate_output(self):
-    #     tmp_list = []
-    #     for i in range(len(self.weights_arrs[-1])):
-    #         tmp_nur = 0
-    #         for j in range(len(self.inputs)):
-    #             tmp_nur +=  self.y_dict['h_{}y_{}'.format(len(self.weights_arrs)-2, j)] * self.weights_arrs[-1][i][j]
-    #         tmp_nur += self.bias[-1][i]
-    #         print(tmp_nur)
-    #         tmp_nur = self.__sigmoid(tmp_nur)
-    #         tmp_list.append(tmp_nur)
-    #     print('output:',tmp_list)
-
-    # def __sigmoid(self, total_net_input):
-    #     # Apply the sigmoid activation function
-    #     return 1/(1 + np.exp(-total_net_input))
 
 def make_coefficient(inpNum, layers):
     def gen_value(num):
         for _ in range(num):
             yield uniform(-3, 3)
+
     def make_w(num, layer):
-        for i in range(layer):
+        for _ in range(layer):
             yield list(gen_value(num))
+            
     def make_b(num):
         yield from gen_value(num)
 
@@ -260,7 +204,7 @@ if __name__ == '__main__':
     #                 [[0.23,0.31,0.51]]]
     # bias_arr = [[0.1,0.2,0.3],[0.5]]
 
-    for i in range(1000):
+    for i in range(1):
         weights_arrs, bias_arr, error = NeuronNetwork(weights_arrs, bias_arr).inspect()
         print('error: ', i, error)
         
